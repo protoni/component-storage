@@ -72,23 +72,23 @@ export default class NavigationPanel extends React.Component {
                 </li>
 
                 <li class="nav_settings_text">
-                    <NavLink className="nav_settings_text"  onMouseDown={ () => this.handleChange("settings")}>
+                    <NavLink className="nav_settings_text"  to="/" onMouseDown={ () => this.handleChange("settings")}>
                         Settings
                     </NavLink>
                 </li>
                 <li class="nav_settings_icon">
-                    <NavLink className="nav_settings_icon"  onMouseDown={ () => this.handleChange("settings")}>
+                    <NavLink className="nav_settings_icon" to="/" onMouseDown={ () => this.handleChange("settings")}>
                     <img src={settingsIcon} alt="" />
                     </NavLink>
                 </li>
 
                 <li class="nav_status_text">
-                    <NavLink className="nav_status_text"  onMouseDown={ () => this.handleChange("status")}>
+                    <NavLink className="nav_status_text" to="/" onMouseDown={ () => this.handleChange("status")}>
                         Status
                     </NavLink>
                 </li>
                 <li class="nav_status_icon">
-                    <NavLink className="nav_status_icon"  onMouseDown={ () => this.handleChange("status")}>
+                    <NavLink className="nav_status_icon" to="/" onMouseDown={ () => this.handleChange("status")}>
                     <img src={statusIcon} alt="" />
                     </NavLink>
                 </li>

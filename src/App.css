@@ -3,14 +3,9 @@
 }
 
 .App-logo {
+  animation: App-logo-spin infinite 20s linear;
   height: 40vmin;
   pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
 }
 
 .App-header {
@@ -35,4 +30,398 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+
+.wrapper {
+  display: flex;
+  justify-content: space-between;
+  padding: 40px;
+  height: 100%;
+}
+
+.main,
+.leftSidebar,
+.rightSidebar,
+.statusBar {
+  border: 0px solid black;
+  
+  background-color: #fff;
+  border-radius: 15px;
+}
+
+.main {
+  clear: both;
+  width: 80%;
+  min-height: 90vh;
+  margin: auto;
+  opacity: 1;
+  padding: 5px;
+}
+
+.leftSidebar {
+  padding: 15px;
+  min-height: 60vh;
+  max-height: 70vh;
+  box-shadow: 1px 1px 6px #757677;
+  opacity: 1;
+}
+
+.rightSidebar {
+  padding: 15px;
+  width: 10%;
+  min-height: 60vh;
+  max-height: 70vh;
+  box-shadow: 1px 1px 6px #757677;
+  opacity: 1;
+}
+
+.statusBar {
+  padding: 15px;
+  width: 10%;
+  min-height: 60vh;
+  max-height: 70vh;
+  box-shadow: 1px 1px 6px #757677;
+  opacity: 1;
+}
+
+body {
+  background-image: url("./assets/images/background_black_wood.jpg");
+  background-color: #000;
+  font-family: sans-serif;
+  padding: 10px;
+  height: 100%;
+}
+
+html {
+  height: 100%;
+}
+
+.leftSidebar {
+  position: -webkit-sticky;
+  position: sticky;
+  min-width: 40px;
+  top: 0;
+}
+
+.rightSidebar {
+  position: -webkit-sticky;
+  position: sticky;
+  min-width: 40px;
+  top: 0;
+}
+
+.usersDiv {
+    text-align: center;
+    height: 100%;
+}
+
+.contactDiv {
+  text-align: center;
+  height: 100%;
+}
+
+.editorDiv {
+  text-align: center;
+  height: 100%;
+}
+
+li {
+  font-size: 1vw;
+  color: #555;
+  margin:0 0 15px 0; 
+}
+
+ul.linkList {
+  clear:both;
+  display: block;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  list-style: none;
+}
+
+.nav_home_text {
+  color: #555;
+}
+
+.nav_home_text:hover {
+  color: #c24046;
+}
+
+.nav_user_text {
+  color: #555;
+}
+
+.nav_user_text:hover {
+  color: #c24046;
+}
+
+.nav_contact_text {
+  color: #555;
+}
+
+.nav_contact_text:hover {
+  color: #c24046;
+}
+
+.nav_editor_text {
+  color: #555;
+}
+
+.nav_editor_text:hover {
+  color: #c24046;
+}
+
+.nav_settings_text {
+  color: #555;
+}
+
+.nav_settings_text:hover {
+  color: #c24046;
+}
+
+.nav_status_text {
+  color: #555;
+}
+
+.nav_status_text:hover {
+  color: #c24046;
+}
+
+.nav_blog_text {
+  color: #555;
+}
+
+.nav_blog_text:hover {
+  color: #c24046;
+}
+
+@media (min-width: 641px) {
+  li.nav_home_icon {display:none}
+  li.nav_home_text {display:block}
+}
+
+@media (max-width: 640px) {
+  li.nav_home_icon {display:block}
+  li.nav_home_text {display:none}
+}
+
+@media (min-width: 641px) {
+  li.nav_user_icon {display:none}
+  li.nav_user_text {display:block}
+}
+
+@media (max-width: 640px) {
+  li.nav_user_icon {display:block}
+  li.nav_user_text {display:none}
+}
+
+@media (min-width: 641px) {
+  li.nav_contact_icon {display:none}
+  li.nav_contact_text {display:block}
+}
+
+@media (max-width: 640px) {
+  li.nav_contact_icon {display:block}
+  li.nav_contact_text {display:none}
+}
+
+@media (min-width: 641px) {
+  li.nav_editor_icon {display:none}
+  li.nav_editor_text {display:block}
+}
+
+@media (max-width: 640px) {
+  li.nav_editor_icon {display:block}
+  li.nav_editor_text {display:none}
+}
+
+@media (min-width: 641px) {
+  li.nav_settings_icon {display:none}
+  li.nav_settings_text {display:block}
+}
+
+@media (max-width: 640px) {
+  li.nav_settings_icon {display:block}
+  li.nav_settings_text {display:none}
+}
+
+@media (min-width: 641px) {
+  li.nav_status_icon {display:none}
+  li.nav_status_text {display:block}
+}
+
+@media (max-width: 640px) {
+  li.nav_status_icon {display:block}
+  li.nav_status_text {display:none}
+}
+
+@media (min-width: 641px) {
+  li.nav_blog_icon {display:none}
+  li.nav_blog_text {display:block}
+}
+
+@media (max-width: 640px) {
+  li.nav_blog_icon {display:block}
+  li.nav_blog_text {display:none}
+}
+
+.editor {
+  width: 50%;
+  margin: auto;
+}
+
+.draggableBounds {
+  border: '1px solid gray';
+  background-color: gray;
+  width: 50%;
+}
+
+.blocks {
+  background-color: gray;
+  border: '1px solid gray';
+}
+
+.blogRow {
+  margin:0 0 5px 0; 
+  text-align: right;
+  border-width: 1px;
+  border-color: green;
+  background-color: rgba(6, 189, 25, 0.15);
+  border-radius: 10px;
+  border-style: solid;
+  width: 100%;
+  overflow-y: hidden;
+  text-overflow: hidden;
+  overflow: auto;
+  padding: 10px;
+}
+
+.blogRowActive {
+  margin:0 0 5px 0; 
+  text-align: right;
+  font-size: 15px;
+  border-width: 1px;
+  border-color: green;
+  background-color: rgba(6, 189, 25, 0.05);
+  border-radius: 10px;
+  border-style: solid;
+  overflow: hidden;
+  width: 100%;
+  color: white;
+  overflow: auto;
+  padding: 10px;
+}
+.blogRow:active {
+  border: 2px solid black;
+  background-color: black;
+}
+
+.blogRowHeader {
+  font-size: 15px;
+  color: gray;
+  padding: 10px;
+}
+
+.rowWrapper {
+  overflow: hidden;
+}
+
+.blogContainer {
+  width: 100%;
+  margin:0 0 10px 0; 
+}
+
+.blogEditorMenu {
+  position: -webkit-sticky;
+  position: sticky;
+  min-width: 40px;
+  z-index:9; 
+  top: 0;
+  margin: auto;
+  width: 50%;
+  border: 1px solid black;
+  border-color: black;
+  background-color: white;
+  padding: 5px;
+  border-radius: 10px;
+  min-height: 4vh;
+  text-align: center;
+}
+
+.blogEditorMenuSeparator {
+  height: 1vh;
+}
+
+.blogEditorHeader {
+  text-align: center;
+}
+
+.blogEditorMenuButtons{
+  margin: auto;
+  text-align: center;
+}
+
+.inputField {
+  background: transparent;
+  border: none;
+  color:black;
+  font-size: 14px;
+  display:table-cell;
+  width: 100%;
+  overflow-y: hidden;
+}
+
+.inputFieldWrapper {
+  display: block;
+  overflow: hidden;
+  padding-right:10px;
+    
+}
+
+.row{
+  overflow: hidden;
+}
+
+.col{
+  overflow: hidden;
+}
+
+.textarea{
+  width:100%;
+  min-height:80px;
+  overflow: hidden;
+  text-align: left;
+  background: transparent;
+}
+
+.editorWrapper {
+  border: 2px solid green;
+  border-radius: 15px;
+  border-color: green;
+  height: 100%;
+  min-height: 90vh;
+}
+
+.editorWrapperUnSaved {
+  border: 2px solid #c24046;
+  border-radius: 15px;
+  border-color: #c24046;
+  height: 100%;
+  min-height: 90vh;
+}
+
+.settingHeader {
+  text-align: center;
+}
+
+.statusHeader {
+  text-align: center;
+}
+
+.statusCol {
+  text-align:center;
+  padding: 15px;
+  font-size: 11px;
 }
