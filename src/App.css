@@ -111,7 +111,7 @@ html {
   top: 0;
 }
 
-.usersDiv {
+.storageDiv {
     text-align: center;
     height: 100%;
 }
@@ -149,11 +149,11 @@ ul.linkList {
   color: #c24046;
 }
 
-.nav_user_text {
+.nav_storage_text {
   color: #555;
 }
 
-.nav_user_text:hover {
+.nav_storage_text:hover {
   color: #c24046;
 }
 
@@ -208,13 +208,13 @@ ul.linkList {
 }
 
 @media (min-width: 641px) {
-  li.nav_user_icon {display:none}
-  li.nav_user_text {display:block}
+  li.nav_storage_icon {display:none}
+  li.nav_storage_text {display:block}
 }
 
 @media (max-width: 640px) {
-  li.nav_user_icon {display:block}
-  li.nav_user_text {display:none}
+  li.nav_storage_icon {display:block}
+  li.nav_storage_text {display:none}
 }
 
 @media (min-width: 641px) {

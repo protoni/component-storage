@@ -38,36 +38,14 @@ export default class NavigationPanel extends React.Component {
                         <img src={homeIcon} alt="" />
                     </NavLink>
                 </li>
-                <li class="nav_user_text">
-                    <NavLink className="nav_user_text" exact activeClassName="active" to="/users" onMouseDown={ () => this.handleChange("users")}>
-                        Users
+                <li class="nav_storage_text">
+                    <NavLink className="nav_storage_text" exact activeClassName="active" to="/storage" onMouseDown={ () => this.handleChange("storage")}>
+                        Storage
                     </NavLink>
                 </li>
-                <li class="nav_user_icon">
-                    <NavLink className="nav_user_icon" exact activeClassName="active" to="/users" onMouseDown={ () => this.handleChange("users")}>
+                <li class="nav_storage_icon">
+                    <NavLink className="nav_storage_icon" exact activeClassName="active" to="/storage" onMouseDown={ () => this.handleChange("storage")}>
                         <img src={personIcon} alt="" />
-                    </NavLink>
-                </li>
-
-                <li class="nav_contact_text">
-                    <NavLink className="nav_contact_text" exact activeClassName="active" to="/contact" onMouseDown={ () => this.handleChange("contact")}>
-                        Contact
-                    </NavLink>
-                </li>
-                <li class="nav_contact_icon">
-                    <NavLink className="nav_contact_icon" exact activeClassName="active" to="/contact" onMouseDown={ () => this.handleChange("contact")}>
-                    <img src={contactIcon} alt="" />
-                    </NavLink>
-                </li>
-
-                <li class="nav_editor_text">
-                    <NavLink className="nav_editor_text" exact activeClassName="active" to="/editor" onMouseDown={ () => this.handleChange("editor")}>
-                        Editor
-                    </NavLink>
-                </li>
-                <li class="nav_editor_icon">
-                    <NavLink className="nav_editor_icon" exact activeClassName="active" to="/editor" onMouseDown={ () => this.handleChange("editor")}>
-                    <img src={editorIcon} alt="" />
                     </NavLink>
                 </li>
 
@@ -90,17 +68,6 @@ export default class NavigationPanel extends React.Component {
                 <li class="nav_status_icon">
                     <NavLink className="nav_status_icon" to="/" onMouseDown={ () => this.handleChange("status")}>
                     <img src={statusIcon} alt="" />
-                    </NavLink>
-                </li>
-
-                <li class="nav_blog_text">
-                    <NavLink className="nav_blog_text" exact activeClassName="active" to="/blog" onMouseDown={ () => this.handleChange("blog")}>
-                        Blog
-                    </NavLink>
-                </li>
-                <li class="nav_blog_icon">
-                    <NavLink className="nav_blog_icon" exact activeClassName="active" to="/blog" onMouseDown={ () => this.handleChange("blog")}>
-                    <img src={blogIcon} alt="" />
                     </NavLink>
                 </li>
 

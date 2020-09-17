@@ -1,6 +1,7 @@
 import React from 'react';
 import {Route, Switch} from 'react-router-dom'
 import Home from './Home';
+import ComponentStorage from './ComponentStorage';
 
 class Main extends React.Component {
     render () {
@@ -8,6 +9,7 @@ class Main extends React.Component {
             
                 <Switch>
                     <Route exact path="/" component={Home} />
+                    <Route exact path="/storage" component={ComponentStorage} />
                 </Switch>
             
         )
