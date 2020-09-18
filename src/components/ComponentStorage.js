@@ -77,12 +77,12 @@ class ComponentStorage extends React.Component {
         
         let componentData = {
             "id" : this.state.idValue,
-            "name: " : this.state.nameValue,
-            "description: " : this.state.descValue,
-            "manufacturer: " : this.state.manufValue,
-            "quantity: " : this.state.quantityValue,
-            "package: " : this.state.packageValue,
-            "location: " : this.state.locationValue
+            "name" : this.state.nameValue,
+            "description" : this.state.descValue,
+            "manufacturer" : this.state.manufValue,
+            "quantity" : this.state.quantityValue,
+            "package" : this.state.packageValue,
+            "location" : this.state.locationValue
         };
         
         console.log("data: " + componentData.id);
