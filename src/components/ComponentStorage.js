@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Table } from 'react-bootstrap';
 import axios from 'axios';
 
 
@@ -14,8 +14,19 @@ class ComponentStorage extends React.Component {
             manufValue: '',
             quantityValue: '',
             packageValue: '',
-            locationValue: ''
+            locationValue: '',
+            componentData: []
         };
+        this.columnNames = [
+            'ID',
+            'Name',
+            'Description',
+            'Manufacturer',
+            'Quantity',
+            'Package',
+            'Location'
+        ];
+        
     }
     
     add = (componentData) => {
@@ -31,6 +42,31 @@ class ComponentStorage extends React.Component {
         console.log("error: " + error);
         });
     }
+    
+    getComponentData = () => {
+        console.log("GetAll clicked!");
+        
+        const promiseComponentData = axios.get('/api/getComponents')
+        
+        // handle success
+        .then(function (response) {
+            //response.data.data.map((item, key) => {
+            //item.date = parseDate(item.date)
+            //});
+            console.log("Loaded data")
+            //this.componentData.push(response.data.data);
+            //console.log(this.componentData)
+            return response.data.data
+        })
+        
+        // handle error
+        .catch(function (error) {
+            console.log(error);
+        });
+        
+        console.log("promiseComponentData: " + promiseComponentData)
+        return promiseComponentData;
+    };
     
     simulateNetworkRequest() {
         return new Promise((resolve) => setTimeout(resolve, 2000));
@@ -64,7 +100,7 @@ class ComponentStorage extends React.Component {
         this.setState({locationValue: evt.target.value});
     }
     
-    onLoadingButtonClick = () => {
+    onAddButtonClick = () => {
         console.log(
         "clicked! " + 
         "ID: " + this.state.idValue + 
@@ -90,7 +126,24 @@ class ComponentStorage extends React.Component {
         this.add(componentData);
         
         this.isLoading = true;
+        this.table = this.generateTable();
     }
+    
+    onGetAllButtonClick = () => {
+        this.getComponentData().then(data => {
+            //console.log("data: " + data)
+            let currentData = this.state.componentData;
+            for(let i = 0; i < data.length; i++) {
+                currentData.push(data[i]);
+            }
+			
+            this.setState({componentData: currentData})
+            console.log(this.state.componentData);
+		})
+        
+        this.generateTable();
+    }
+    
     /*
     onLoadingButtonClick(event) {
         this.setState({value: event.target.value});
@@ -98,12 +151,72 @@ class ComponentStorage extends React.Component {
         this.isLoading = true;
     }
     */
-   
+    
+    buildRow = (row, headers, rowIndex) => {
+        console.log("headers" + headers)
+        return (
+         <tr key={rowIndex}>
+         <td>{rowIndex}</td>
+         { headers.map((value, index) => {
+             if(index == 0) {
+                return <td key={index}>{this.state.componentData[rowIndex].productId}</td>
+             } else if(index == 1) {
+                return <td key={index}>{this.state.componentData[rowIndex].name}</td>
+             } else if(index == 2) {
+                return <td key={index}>{this.state.componentData[rowIndex].description}</td>
+             } else if(index == 3) {
+                return <td key={index}>{this.state.componentData[rowIndex].manufacturer}</td>
+             } else if(index == 4) {
+                return <td key={index}>{this.state.componentData[rowIndex].quantity}</td>
+             } else if(index == 5) {
+                return <td key={index}>{this.state.componentData[rowIndex].package}</td>
+             } else if(index == 6) {
+                return <td key={index}>{this.state.componentData[rowIndex].location}</td>
+             } else {
+                 return <td key={index}>{"1"}</td>
+             }
+                 
+          })}
+         </tr>
+     )
+  };
+    
+    generateTable() {
+        console.log("table len: " + this.state.componentData.length)
+        this.table = (
+          <Table responsive bordered hover>
+            <thead className="thead-dark" key="header-1">
+              <tr>
+                <th>#</th>
+                 {this.columnNames.map((_, index) => (
+                    <th key={index}>{this.columnNames[index]}</th>
+                  ))}
+               </tr>
+            </thead>
+          <tbody>
+          
+          
+          
+        { this.state.componentData.map((value, index) => {
+              return this.buildRow(value, this.columnNames, index);
+          })}
+        
+    
+    
+  </tbody>
+</Table>
+        )
+        
+       
+    }
+    
+    
+    
+    
     render() {
-        let msg = "";
-        for(let i = 0; i < 10000; i++) {
-            msg += "ASD\r\n";
-        }
+        this.generateTable();
+        console.log("table: " + this.table)
+        
         return (
           <div class="storageDiv">
           <h2>Component storage</h2>
@@ -157,14 +270,19 @@ class ComponentStorage extends React.Component {
             </label>
           </div>
           
-          <div>
-            <Button variant="primary" onClick={this.onLoadingButtonClick}>
+          <div style={{marginTop: 10, marginBottom: 10}}>
+            <Button variant="primary" onClick={this.onAddButtonClick}>
                 Add
+            </Button>
+            {' '}
+            <Button variant="primary" onClick={this.onGetAllButtonClick}>
+                Get All
             </Button>
           </div>
           
-                <p>{msg}</p>
-            </div>
+          {this.table}
+         
+        </div>
         )
     }
   }
