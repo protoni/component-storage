@@ -2,11 +2,8 @@ import React from 'react';
 import {NavLink} from 'react-router-dom';
 import homeIcon from '../assets/icons/home-2x.png';
 import personIcon from '../assets/icons/person-2x.png';
-import contactIcon from '../assets/icons/envelope-closed-2x.png';
-import editorIcon from '../assets/icons/pencil-2x.png'
 import settingsIcon from '../assets/icons/cog-2x.png'
 import statusIcon from '../assets/icons/power-standby-2x.png'
-import blogIcon from '../assets/icons/book-2x.png'
 
 export default class NavigationPanel extends React.Component {
     constructor(props) {

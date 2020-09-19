@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Button, Table } from 'react-bootstrap';
+import { Button, Table } from 'react-bootstrap';
 import axios from 'axios';
 
 
@@ -158,19 +158,19 @@ class ComponentStorage extends React.Component {
          <tr key={rowIndex}>
          <td>{rowIndex}</td>
          { headers.map((value, index) => {
-             if(index == 0) {
+             if(index === 0) {
                 return <td key={index}>{this.state.componentData[rowIndex].productId}</td>
-             } else if(index == 1) {
+             } else if(index === 1) {
                 return <td key={index}>{this.state.componentData[rowIndex].name}</td>
-             } else if(index == 2) {
+             } else if(index === 2) {
                 return <td key={index}>{this.state.componentData[rowIndex].description}</td>
-             } else if(index == 3) {
+             } else if(index === 3) {
                 return <td key={index}>{this.state.componentData[rowIndex].manufacturer}</td>
-             } else if(index == 4) {
+             } else if(index === 4) {
                 return <td key={index}>{this.state.componentData[rowIndex].quantity}</td>
-             } else if(index == 5) {
+             } else if(index === 5) {
                 return <td key={index}>{this.state.componentData[rowIndex].package}</td>
-             } else if(index == 6) {
+             } else if(index === 6) {
                 return <td key={index}>{this.state.componentData[rowIndex].location}</td>
              } else {
                  return <td key={index}>{"1"}</td>
