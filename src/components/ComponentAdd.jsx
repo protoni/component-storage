@@ -3,6 +3,7 @@ import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import FileUpload from './FileUpload.jsx'
 
 class ComponentAdd extends React.Component {
   constructor(props) {
@@ -147,6 +148,7 @@ class ComponentAdd extends React.Component {
               <input type="text" value={this.state.locationValue} onChange={this.handleLocationChange} />
             </label>
           </div>
+          <FileUpload />
           <div style={{marginTop: 10, marginBottom: 10 }}>
             <Button variant="primary" onClick={this.onAddButtonClick}>
               Add
