@@ -44,6 +44,20 @@ class FileUpload extends React.Component {
     // req.end();
   }
 
+  upload = (files) => {
+    const requests = files.map((file) => request
+      .post('/api/saveFiles')
+      .attach('myImage', file)
+      .on('progress', (e) => {
+        console.log('Percentage done: ', e.percent);
+      })
+      .end(((response) => {
+        console.log(response);
+      })));
+
+    Promise.all(requests).then(console.log('done')).catch(console.error);
+  }
+
   onPreviewDrop = (previewFiles) => {
     previewFiles.map((file) => {
       if (file.type.includes('image')) {
@@ -61,6 +75,8 @@ class FileUpload extends React.Component {
     });
 
     console.log(previewFiles);
+
+    this.upload(previewFiles);
   }
 
   render() {
