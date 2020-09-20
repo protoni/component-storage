@@ -1,45 +1,83 @@
 /* eslint-disable no-console */
 import React from 'react';
-import { render } from 'react-dom';
-import { Modal, Button } from 'react-bootstrap';
-import PropTypes from 'prop-types';
-import axios from 'axios';
 import Dropzone from 'react-dropzone';
-import request from 'superagent';
 import classNames from 'classnames';
+import axios from 'axios';
+import request from 'superagent';
 
 class FileUpload extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showModal: false,
+      files: [],
     };
+  }
+
+  saveFiles = (files) => {
+    console.log('Saving files!');
+    axios.post('/api/saveFiles', {
+      data: files,
+    })
+      .then((response) => {
+        console.log(`response:  ${response}`);
+      })
+      .catch((error) => {
+        console.log(`error: ${error}`);
+      });
   }
 
   onDrop = (files) => {
     // POST to a test endpoint for demo purposes
-    console.log("Files dropped!");
+    console.log('Files dropped!');
 
-    const req = request.post('https://httpbin.org/post');
+    const req = request.post('/api/saveFiles');
 
     files.forEach((file) => {
-      console.log("Name: " + file.name);
-      console.log(file)
+      console.log(`Name: ${file.name}`);
+      console.log(file);
+      console.log(file.data);
       req.attach(file.name, file);
     });
 
-    req.end();
+    // this.saveFiles(files);
+
+    // req.end();
+  }
+
+  onPreviewDrop = (previewFiles) => {
+    previewFiles.map((file) => {
+      if (file.type.includes('image')) {
+        Object.assign(file, {
+          preview: URL.createObjectURL(file),
+        });
+      } else {
+        console.log(`File: ${file.name} not image!`);
+      }
+      return null;
+    });
+
+    this.setState({
+      files: previewFiles,
+    });
+
+    console.log(previewFiles);
   }
 
   render() {
+    const previewStyle = {
+      display: 'inline',
+      width: 100,
+      height: 100,
+    };
+
     return (
-      <Dropzone onDrop={this.onDrop}>
-        {({ getRootProps, getInputProps, isDragActive }) => {
-          return (
+      <div>
+        <Dropzone onDrop={this.onPreviewDrop}>
+          {({ getRootProps, getInputProps, isDragActive }) => (
             <div
               {...getRootProps()}
-              className={classNames("dropzone", {
-                "dropzone--isActive": isDragActive
+              className={classNames('dropzone', {
+                'dropzone--isActive': isDragActive,
               })}
             >
               <input {...getInputProps()} />
@@ -52,9 +90,22 @@ class FileUpload extends React.Component {
                 </p>
               )}
             </div>
-          );
-        }}
-      </Dropzone>
+          )}
+        </Dropzone>
+        {this.state.files.length > 0 && (
+        <>
+          <h3>Previews</h3>
+          {this.state.files.map((file) => (
+            <img
+              alt="Preview"
+              key={file.preview}
+              src={file.preview}
+              style={previewStyle}
+            />
+          ))}
+        </>
+        )}
+      </div>
     );
   }
 }
