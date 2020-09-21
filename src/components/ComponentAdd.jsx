@@ -148,12 +148,13 @@ class ComponentAdd extends React.Component {
               <input type="text" value={this.state.locationValue} onChange={this.handleLocationChange} />
             </label>
           </div>
-          <FileUpload />
           <div style={{marginTop: 10, marginBottom: 10 }}>
             <Button variant="primary" onClick={this.onAddButtonClick}>
               Add
             </Button>
           </div>
+          <FileUpload />
+          
         </Modal.Body>
       </Modal>
     );

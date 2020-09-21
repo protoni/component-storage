@@ -2,8 +2,14 @@
 import React from 'react';
 import Dropzone from 'react-dropzone';
 import classNames from 'classnames';
+import { Table } from 'react-bootstrap';
 import axios from 'axios';
 import request from 'superagent';
+import miscFile from '../assets/icons/miscFile.png';
+import pdfFile from '../assets/icons/pdfFile.png';
+import txtFile from '../assets/icons/txtFile.png';
+import csvFile from '../assets/icons/csvFile.png';
+import zipFile from '../assets/icons/zipFile.png';
 
 class FileUpload extends React.Component {
   constructor(props) {
@@ -47,7 +53,7 @@ class FileUpload extends React.Component {
   upload = (files) => {
     const requests = files.map((file) => request
       .post('/api/saveFiles')
-      .attach('myImage', file)
+      .attach('file', file)
       .on('progress', (e) => {
         console.log('Percentage done: ', e.percent);
       })
@@ -77,6 +83,13 @@ class FileUpload extends React.Component {
     console.log(previewFiles);
 
     this.upload(previewFiles);
+  }
+
+  bytesToSize = (bytes) => {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes == 0) return '0 Byte';
+    const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+    return `${Math.round(bytes / Math.pow(1024, i), 2)} ${sizes[i]}`;
   }
 
   render() {
@@ -111,14 +124,129 @@ class FileUpload extends React.Component {
         {this.state.files.length > 0 && (
         <>
           <h3>Previews</h3>
-          {this.state.files.map((file) => (
-            <img
-              alt="Preview"
-              key={file.preview}
-              src={file.preview}
-              style={previewStyle}
-            />
-          ))}
+
+            {this.state.files.map((file) => {
+              console.log(`type: ${file.type}`);
+
+              {/* Create image file view */}
+              if (file.type.includes('image')) {
+                return (
+                  <div style={{ margin: '30px' }}>
+                    <img
+                      alt="Preview"
+                      key={file.preview}
+                      src={file.preview}
+                      style={previewStyle}
+                    />
+                    <b>
+                      {' '}{file.name}
+                      {' ( '}
+                      {this.bytesToSize(file.size)}
+                      {' )'}
+                    </b>
+                  </div>
+                );
+              }
+
+              {/* Create .pdf file view */}
+              if (file.type.includes('pdf')) {
+                return (
+                  <div style={{ margin: '15px' }}>
+                    <img
+                      alt="Preview"
+                      key={file.preview}
+                      src={pdfFile}
+                      style={previewStyle}
+                    />
+                    <b>
+                      {file.name}
+                      {' ( '}
+                      {this.bytesToSize(file.size)}
+                      {' )'}
+                    </b>
+                  </div>
+                );
+              }
+
+              {/* Create .zip file view */}
+              if (file.type.includes('zip')) {
+                return (
+                  <div style={{ margin: '15px' }}>
+                    <img
+                      alt="Preview"
+                      key={file.preview}
+                      src={zipFile}
+                      style={previewStyle}
+                    />
+                    <b>
+                      {file.name}
+                      {' ( '}
+                      {this.bytesToSize(file.size)}
+                      {' )'}
+                    </b>
+                  </div>
+                );
+              }
+
+              {/* Create .csv file view */}
+              if (file.type.includes('excel')) {
+                return (
+                  <div style={{ margin: '15px' }}>
+                    <img
+                      alt="Preview"
+                      key={file.preview}
+                      src={csvFile}
+                      style={previewStyle}
+                    />
+                    <b>
+                      {file.name}
+                      {' ( '}
+                      {this.bytesToSize(file.size)}
+                      {' )'}
+                    </b>
+                  </div>
+                );
+              }
+
+              {/* Create .txt file view */}
+              if (file.type.includes('text')) {
+                return (
+                  <div style={{ margin: '15px' }}>
+                    <img
+                      alt="Preview"
+                      key={file.preview}
+                      src={txtFile}
+                      style={previewStyle}
+                    />
+                    <b>
+                      {file.name}
+                      {' ( '}
+                      {this.bytesToSize(file.size)}
+                      {' )'}
+                    </b>
+                  </div>
+                );
+              }
+
+              {/* Create file view for all the other unknown file types*/}
+              return (
+                <div style={{ margin: '15px' }}>
+                  <img
+                    alt="Preview"
+                    key={file.preview}
+                    src={miscFile}
+                    style={previewStyle}
+                  />
+                  <b>
+                    {file.name}
+                    {' ( '}
+                    {this.bytesToSize(file.size)}
+                    {' )'}
+                  </b>
+                </div>
+              );
+            })}
+
         </>
         )}
       </div>
