@@ -1,6 +1,13 @@
 /* eslint-disable no-console */
 import React from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import {
+  Modal,
+  Button,
+  InputGroup,
+  FormControl,
+  Dropdown,
+  DropdownButton,
+} from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import FileUpload from './FileUpload.jsx'
@@ -106,55 +113,64 @@ class ComponentAdd extends React.Component {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        <div>
-            <label>
-              ID:
-                <input type="text" value={this.state.idValue} onChange={this.handleIdChange} />
-            </label>
-          </div>
-          <div>
-            <label>
-              Name:
-              <input type="text" value={this.state.nameValue} onChange={this.handleNameChange} />
-            </label>
-          </div>
-          <div>
-            <label>
-              Description:
-              <input type="text" value={this.state.descValue} onChange={this.handleDescChange} />
-            </label>
-          </div>
-          <div>
-            <label>
-              Manufacturer:
-              <input type="text" value={this.state.manufValue} onChange={this.handleManufChange} />
-            </label>
-          </div>
-          <div>
-            <label>
-              Quantity:
-              <input type="text" value={this.state.quantityValue} onChange={this.handleQuantityChange} />
-            </label>
-          </div>
-          <div>
-            <label>
-              Package:
-              <input type="text" value={this.state.packageValue} onChange={this.handlePackageChange} />
-            </label>
-          </div>
-          <div>
-            <label>
-              Location:
-              <input type="text" value={this.state.locationValue} onChange={this.handleLocationChange} />
-            </label>
-          </div>
+        <b>ID</b>
+          <InputGroup size="sm" className="mb-3">
+            <FormControl onChange={this.handleIdChange} aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
+          </InputGroup>
+
+          <b>Name</b>
+          <InputGroup size="sm" className="mb-3">
+            <FormControl onChange={this.handleNameChange} aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
+          </InputGroup>
+
+          <b>Description</b>
+          <InputGroup size="sm" className="mb-3">
+            <FormControl onChange={this.handleDescChange} aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
+          </InputGroup>
+
+          <b>Manufacturer</b>
+          <InputGroup size="sm" className="mb-3">
+            <FormControl onChange={this.handleManufChange} aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
+          </InputGroup>
+
+          <b>Quantity</b>
+          <InputGroup size="sm" className="mb-3">
+            <FormControl onChange={this.handleQuantityChange} aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
+          </InputGroup>
+
+          <b>Package</b>
+          <InputGroup size="sm" className="mb-3">
+            <FormControl onChange={this.handlePackageChange} aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
+          </InputGroup>
+
+          <b>Location</b>
+          <InputGroup size="sm" className="mb-3">
+            <FormControl onChange={this.handleLocationChange} aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
+          </InputGroup>
+
+          <b>Category</b>
+          <InputGroup size="sm" className="mb-3">
+            <DropdownButton
+              as={InputGroup.Prepend}
+              variant="outline-secondary"
+              title="Categories"
+              id="input-group-dropdown-1"
+            >
+              <Dropdown.Item href="#">Action</Dropdown.Item>
+              <Dropdown.Item href="#">Another action</Dropdown.Item>
+              <Dropdown.Item href="#">Something else here</Dropdown.Item>
+              <Dropdown.Divider />
+              <Dropdown.Item href="#">Separated link</Dropdown.Item>
+            </DropdownButton>
+            <FormControl aria-describedby="basic-addon1" />
+          </InputGroup>
           <div style={{marginTop: 10, marginBottom: 10 }}>
             <Button variant="primary" onClick={this.onAddButtonClick}>
               Add
             </Button>
           </div>
           <FileUpload />
-          
+
         </Modal.Body>
       </Modal>
     );
