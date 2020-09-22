@@ -2,7 +2,6 @@
 import React from 'react';
 import Dropzone from 'react-dropzone';
 import classNames from 'classnames';
-import { Table } from 'react-bootstrap';
 import axios from 'axios';
 import request from 'superagent';
 import miscFile from '../assets/icons/miscFile.png';
@@ -10,6 +9,7 @@ import pdfFile from '../assets/icons/pdfFile.png';
 import txtFile from '../assets/icons/txtFile.png';
 import csvFile from '../assets/icons/csvFile.png';
 import zipFile from '../assets/icons/zipFile.png';
+import styles from './css/FileUpload.css';
 
 class FileUpload extends React.Component {
   constructor(props) {
@@ -87,7 +87,7 @@ class FileUpload extends React.Component {
 
   bytesToSize = (bytes) => {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    if (bytes == 0) return '0 Byte';
+    if (bytes === 0) return '0 Byte';
     const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
     return `${Math.round(bytes / Math.pow(1024, i), 2)} ${sizes[i]}`;
   }
@@ -110,14 +110,15 @@ class FileUpload extends React.Component {
               })}
             >
               <input {...getInputProps()} />
-              {isDragActive ? (
-                <p>Drop files here...</p>
-              ) : (
-                <p>
-                  Try dropping some files here, or click to select files to
-                  upload.
-                </p>
-              )}
+              <div>
+                {isDragActive ? (
+                  <p className="hoveredDropZone">Drop files here...</p>
+                ) : (
+                  <p className="dropZone">
+                    Drop files here or click to upload.
+                  </p>
+                )}
+              </div>
             </div>
           )}
         </Dropzone>
@@ -128,7 +129,7 @@ class FileUpload extends React.Component {
             {this.state.files.map((file) => {
               console.log(`type: ${file.type}`);
 
-              {/* Create image file view */}
+              /* Create image file view */
               if (file.type.includes('image')) {
                 return (
                   <div style={{ margin: '30px' }}>
@@ -139,7 +140,8 @@ class FileUpload extends React.Component {
                       style={previewStyle}
                     />
                     <b>
-                      {' '}{file.name}
+                      {' '}
+                      {file.name}
                       {' ( '}
                       {this.bytesToSize(file.size)}
                       {' )'}
@@ -148,7 +150,7 @@ class FileUpload extends React.Component {
                 );
               }
 
-              {/* Create .pdf file view */}
+              /* Create .pdf file view */
               if (file.type.includes('pdf')) {
                 return (
                   <div style={{ margin: '15px' }}>
@@ -168,7 +170,7 @@ class FileUpload extends React.Component {
                 );
               }
 
-              {/* Create .zip file view */}
+              /* Create .zip file view */
               if (file.type.includes('zip')) {
                 return (
                   <div style={{ margin: '15px' }}>
@@ -188,7 +190,7 @@ class FileUpload extends React.Component {
                 );
               }
 
-              {/* Create .csv file view */}
+              /* Create .csv file view */
               if (file.type.includes('excel')) {
                 return (
                   <div style={{ margin: '15px' }}>
@@ -208,7 +210,7 @@ class FileUpload extends React.Component {
                 );
               }
 
-              {/* Create .txt file view */}
+              /* Create .txt file view */
               if (file.type.includes('text')) {
                 return (
                   <div style={{ margin: '15px' }}>
@@ -228,7 +230,7 @@ class FileUpload extends React.Component {
                 );
               }
 
-              {/* Create file view for all the other unknown file types*/}
+              /* Create file view for all the other unknown file types */
               return (
                 <div style={{ margin: '15px' }}>
                   <img
