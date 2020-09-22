@@ -2,6 +2,7 @@ import React from 'react';
 import {Route, Switch} from 'react-router-dom'
 import Home from './Home';
 import ComponentStorage from './ComponentStorage';
+import StorageItem from './StorageItem';
 
 class Main extends React.Component {
     render () {
@@ -10,6 +11,7 @@ class Main extends React.Component {
                 <Switch>
                     <Route exact path="/" component={Home} />
                     <Route exact path="/storage" component={ComponentStorage} />
+                    <Route exact path="/storage-item/:id" component={StorageItem} />
                 </Switch>
             
         )

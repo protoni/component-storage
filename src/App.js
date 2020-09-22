@@ -2,8 +2,8 @@ import React from 'react';
 import './App.css';
 import NavigationPanel from './components/NavigationPanel';
 import Main from './components/Main';
-import SettingsBar from './components/SettingsBar'
-import StatusBar from './components/StatusBar'
+import SettingsBar from './components/SettingsBar';
+import StatusBar from './components/StatusBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 
@@ -98,13 +98,13 @@ class App extends React.Component {
   render(){
   return (
     
-    <div class="wrapper">
+    <div className="wrapper">
 
-      <div class="leftSidebar">
+      <div className="leftSidebar">
         <NavigationPanel onChange={this.handleViewChange} />
       </div>
 
-      <div class="main">
+      <div className="main">
         <Main />
       </div>
       

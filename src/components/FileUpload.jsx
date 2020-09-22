@@ -9,7 +9,7 @@ import pdfFile from '../assets/icons/pdfFile.png';
 import txtFile from '../assets/icons/txtFile.png';
 import csvFile from '../assets/icons/csvFile.png';
 import zipFile from '../assets/icons/zipFile.png';
-import styles from './css/FileUpload.css';
+import './css/FileUpload.css';
 
 class FileUpload extends React.Component {
   constructor(props) {

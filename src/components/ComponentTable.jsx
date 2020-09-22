@@ -2,10 +2,12 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
 import PropTypes from 'prop-types';
+import { NavLink } from 'react-router-dom';
 
 class ComponentTable extends React.Component {
   constructor(props) {
     super(props);
+    this.handleChange = this.handleChange.bind(this);
     this.columnNames = [
       'ID',
       'Name',
@@ -17,6 +19,11 @@ class ComponentTable extends React.Component {
     ];
   }
 
+  handleChange = (view) => {
+    console.log(`StorageItem! pressed:${view}`);
+    this.props.onChange(view);
+  }
+
   buildRow = (data, row, headers, rowIndex) => {
     console.log(`headers${headers}`);
     return (
@@ -24,7 +31,14 @@ class ComponentTable extends React.Component {
         <td>{rowIndex}</td>
         { headers.map((value, index) => {
           if (index === 0) {
-            return <td key={index}>{data[rowIndex].productId}</td>;
+            return (
+              <td>
+                <NavLink className="nav_storage_icon" exact activeClassName="active" to={`storage-item/${data[rowIndex].productId}`}>
+                  {data[rowIndex].productId}
+                </NavLink>
+              </td>
+              /* <td key={index}>{data[rowIndex].productId}</td> */
+            );
           } if (index === 1) {
             return <td key={index}>{data[rowIndex].name}</td>;
           } if (index === 2) {
