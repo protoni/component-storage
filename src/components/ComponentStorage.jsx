@@ -13,7 +13,7 @@ class ComponentStorage extends React.Component {
       componentData: [],
       showModal: false,
     };
-    
+    this.errors = [];
   }
 
   componentDidMount() {
@@ -38,16 +38,29 @@ class ComponentStorage extends React.Component {
     return promiseComponentData;
   };
 
+  addError = (err) => {
+    this.errors.push(err);
+  }
+
   getAllData = () => {
-    this.getComponentData().then((data) => {
-       //console.log("data: " + data)
-      const currentData = this.state.componentData;
-      for (let i = 0; i < data.length; i += 1) {
-        currentData.push(data[i]);
-      }
-      this.setState({ componentData: currentData });
-      console.log(this.state.componentData);
-    });
+    try {
+      this.getComponentData().then((data) => {
+        // console.log("data: " + data)
+        if (!data) {
+          console.log('Failed to get data!');
+          this.addError('Failed to get data from the backend!');
+          return;
+        }
+        const currentData = this.state.componentData;
+        for (let i = 0; i < data.length; i += 1) {
+          currentData.push(data[i]);
+        }
+        this.setState({ componentData: currentData });
+        console.log(this.state.componentData);
+      });
+    } catch (error) {
+      console.log('ComponentStorage.jsx Error! Failed to get component data!');
+    }
   }
 
   onGetAllButtonClick = () => {

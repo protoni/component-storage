@@ -12,6 +12,9 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import FileUpload from './FileUpload.jsx'
 
+// ( seconds )
+var FILE_UPLOAD_TIMEOUT = 60;
+
 class ComponentAdd extends React.Component {
   constructor(props) {
     super(props);
@@ -24,7 +27,26 @@ class ComponentAdd extends React.Component {
       quantityValue: '',
       packageValue: '',
       locationValue: '',
+      addButtonClicked: false,
     };
+    this.addButtonClicked = false;
+    this.files = [];
+    this.filesDropped = 0;
+  }
+
+  // Callback function
+  onUpload = (files) => {
+    this.setState({ addButtonClicked: false });
+    //this.addButtonClicked = false;
+    this.files = files;
+    console.log("Uploaded!");
+    console.log(files);
+  }
+
+  // Callback function
+  onFileDrop = (filesUploaded) => {
+    this.filesDropped += filesUploaded;
+    console.log("Incremented file counter by: " + filesUploaded);
   }
 
   add = (componentData) => {
@@ -68,6 +90,25 @@ class ComponentAdd extends React.Component {
     this.setState({ locationValue: evt.target.value });
   }
 
+  waitFileUpload = () => {
+    for (let i = 0; i < FILE_UPLOAD_TIMEOUT; i += 1) {
+      if (this.filesDropped === this.files.length) {
+        return;
+      }
+
+      this.sleep(1000);
+    }
+
+    console.log("Waiting for files to upload timed out!");
+  }
+
+  addComponentData = async (data) => {
+    await this.waitFileUpload();
+    console.log('this.filesDropped: ' + this.filesDropped + ', this.files.length: ' + this.files.length);
+    data.files = this.files;
+    this.add(data);
+  }
+
   onAddButtonClick = () => {
     console.log(
       `${'clicked! '
@@ -87,15 +128,21 @@ class ComponentAdd extends React.Component {
       manufacturer: this.state.manufValue,
       quantity: this.state.quantityValue,
       package: this.state.packageValue,
-      location: this.state.locationValue
+      location: this.state.locationValue,
+      files: this.files,
     };
 
-    console.log(`data: ${componentData.id}`);
+    console.log(componentData);
 
-    this.add(componentData);
+    this.addComponentData(componentData);
 
     this.isLoading = true;
+
+    this.setState({ addButtonClicked: true });
+    // this.addButtonClicked = true;
   }
+
+  sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   render() {
     const { show, onHide } = this.props;
@@ -113,7 +160,7 @@ class ComponentAdd extends React.Component {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        <b>ID</b>
+          <b>ID</b>
           <InputGroup size="sm" className="mb-3">
             <FormControl onChange={this.handleIdChange} aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
           </InputGroup>
@@ -169,7 +216,12 @@ class ComponentAdd extends React.Component {
               Add
             </Button>
           </div>
-          <FileUpload />
+          <FileUpload
+            partNum={this.state.idValue}
+            addButtonClicked={this.state.addButtonClicked}
+            onUpload={this.onUpload}
+            onFileDrop={this.onFileDrop}
+          />
 
         </Modal.Body>
       </Modal>

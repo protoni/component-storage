@@ -4,6 +4,8 @@ import Dropzone from 'react-dropzone';
 import classNames from 'classnames';
 import axios from 'axios';
 import request from 'superagent';
+import PropTypes from 'prop-types';
+
 import miscFile from '../assets/icons/miscFile.png';
 import pdfFile from '../assets/icons/pdfFile.png';
 import txtFile from '../assets/icons/txtFile.png';
@@ -17,6 +19,39 @@ class FileUpload extends React.Component {
     this.state = {
       files: [],
     };
+    this.files = [];
+    this.partNum = '';
+    this.addButtonClicked = false;
+    this.onUploadFunc = null;
+    this.onFileDropFunc = null;
+  }
+
+  componentDidUpdate() {
+    this.shouldUpload();
+    console.log("Component updated!");
+  }
+
+  shouldUpload = () => {
+    if (this.addButtonClicked) {
+      this.addButtonClicked = false;
+      this.upload(this.state.files);
+      this.informParentForUpload();
+    }
+  }
+
+  informParentForUpload = () => {
+    let filesObj = {};
+    const files = [];
+
+    for (let i = 0; i < this.state.files.length; i++) {
+      filesObj = {
+        name: this.state.files[i].name,
+        size: this.state.files[i].size,
+      };
+      files.push(filesObj);
+    }
+
+    this.onUploadFunc(files);
   }
 
   saveFiles = (files) => {
@@ -31,7 +66,7 @@ class FileUpload extends React.Component {
         console.log(`error: ${error}`);
       });
   }
-
+  /*
   onDrop = (files) => {
     // POST to a test endpoint for demo purposes
     console.log('Files dropped!');
@@ -39,6 +74,8 @@ class FileUpload extends React.Component {
     const req = request.post('/api/saveFiles');
 
     files.forEach((file) => {
+      this.files.push(file);
+
       console.log(`Name: ${file.name}`);
       console.log(file);
       console.log(file.data);
@@ -49,6 +86,7 @@ class FileUpload extends React.Component {
 
     // req.end();
   }
+  */
 
   upload = (files) => {
     const requests = files.map((file) => request
@@ -64,6 +102,29 @@ class FileUpload extends React.Component {
     Promise.all(requests).then(console.log('done')).catch(console.error);
   }
 
+  isDuplicate = (file) => {
+    const currentArr = this.state.files;
+    for (let i = 0; i < currentArr.length; i += 1) {
+      if (currentArr[i].name === file.name) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /*
+  addToList = (files) => {
+    console.log("files before:");
+    console.log(files);
+    files.forEach((file) => {
+      file.partNum = this.partNum;
+      this.files.push(file);
+    });
+    console.log("files after:");
+    console.log(this.files);
+  }
+  */
   onPreviewDrop = (previewFiles) => {
     previewFiles.map((file) => {
       if (file.type.includes('image')) {
@@ -76,13 +137,29 @@ class FileUpload extends React.Component {
       return null;
     });
 
+    // Update state file array
+    const currentArr = this.state.files;
+    for (let i = 0; i < previewFiles.length; i += 1) {
+      if (!this.isDuplicate(previewFiles[i])) {
+        currentArr.push(previewFiles[i]);
+      } else {
+        console.log(`Duplicate file! Name: ${previewFiles[i].name}`);
+      }
+    }
+
     this.setState({
-      files: previewFiles,
+      files: currentArr,
     });
+    this.onFileDropFunc(currentArr.length);
+    // this.files = previewFiles;
 
-    console.log(previewFiles);
+    // console.log("previewFiles:");
+    // console.log(previewFiles);
 
-    this.upload(previewFiles);
+    // this.upload(previewFiles);
+    // this.addToList(previewFiles);
+    console.log("files after:");
+    console.log(this.state.files);
   }
 
   bytesToSize = (bytes) => {
@@ -93,6 +170,15 @@ class FileUpload extends React.Component {
   }
 
   render() {
+    const {
+      partNum, addButtonClicked, onUpload, onFileDrop,
+    } = this.props;
+    this.partNum = partNum;
+    this.addButtonClicked = addButtonClicked;
+    this.onUploadFunc = onUpload;
+    this.onFileDropFunc = onFileDrop;
+
+    console.log("FileUpload! addButtonClicked: " + addButtonClicked);
     const previewStyle = {
       display: 'inline',
       width: 100,
@@ -255,5 +341,19 @@ class FileUpload extends React.Component {
     );
   }
 }
+
+FileUpload.defaultProps = {
+  partNum: PropTypes.string,
+  addButtonClicked: PropTypes.bool,
+  onUpload: PropTypes.func,
+  onFileDrop: PropTypes.func,
+};
+
+FileUpload.propTypes = {
+  partNum: PropTypes.string,
+  addButtonClicked: PropTypes.bool,
+  onUpload: PropTypes.func,
+  onFileDrop: PropTypes.func,
+};
 
 export default FileUpload;
