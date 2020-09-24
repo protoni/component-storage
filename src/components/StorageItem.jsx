@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 import React from 'react';
 import axios from 'axios';
+import { Button } from 'react-bootstrap';
+import downloadjs from 'downloadjs';
 
 class StorageItem extends React.Component {
   constructor(props) {
@@ -8,7 +10,9 @@ class StorageItem extends React.Component {
     this.state = {
       id: 0,
       componentData: [],
+      files: [],
     };
+    this.filesFetched = false;
   }
 
   componentDidMount() {
@@ -16,6 +20,27 @@ class StorageItem extends React.Component {
     this.setState({ id });
     console.log(`id: ${id}`);
     this.loadComponentData(id);
+    this.getFileHeaders(id);
+    console.log("filesFetched: " + this.filesNotFetched);
+  }
+
+  getFileHeaders = (id) => {
+    if (!this.filesFetched) {
+      axios.get(`/api/getFileHeaders/${id}`)
+      // handle success
+        .then((response) => {
+          console.log('Loaded file headers');
+          console.log(response.data.files);
+          this.filesFetched = true;
+          this.setState({ files: response.data.files });
+          return response;
+        })
+
+      // handle error
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   }
 
   loadComponentData = (id) => {
@@ -51,6 +76,39 @@ class StorageItem extends React.Component {
     console.log(`promiseComponentData: ${promiseComponentData}`);
     return promiseComponentData;
   };
+
+  handleDownload = async (file) => {
+    // const res = await fetch(`${`/api/getFile/${this.state.id}`'/'${file}`);
+    const res = await fetch(`/api/getFile/${this.state.id}/${file}`);
+    const blob = await res.blob();
+    downloadjs(blob, file);
+  }
+
+  onDownloadButtonClick = () => {
+    console.log('Btn clicked');
+    this.handleDownload();
+  }
+
+  fileClicked = (e) => {
+    console.log("file clicked! file: " + e.target.id);
+    this.handleDownload(e.target.id);
+  }
+
+  generateFileView = () => {
+    if (this.state.componentData.length > 0) {
+      this.fileView = (
+        <div>
+          {this.state.files.map((file) => (
+            <div id={file} onClick={this.fileClicked}>
+              {file}
+            </div>
+          ))}
+        </div>
+      );
+    } else {
+      this.fileView = (<div><b>NO FILES</b></div>);
+    }
+  }
 
   generateView() {
     if (this.state.componentData.length > 0) {
@@ -90,6 +148,7 @@ class StorageItem extends React.Component {
 
   render() {
     this.generateView();
+    this.generateFileView();
 
     return (
       <div>
@@ -97,8 +156,13 @@ class StorageItem extends React.Component {
           Item
           {' '}
           {this.state.id}
+          <Button variant="primary" onClick={this.onDownloadButtonClick}>
+            Download
+          </Button>
         </h2>
         {this.table}
+        <b>Files:</b>
+        {this.fileView}
       </div>
     );
   }
