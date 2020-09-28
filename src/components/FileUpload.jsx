@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import axios from 'axios';
 import request from 'superagent';
 import PropTypes from 'prop-types';
+import { InputGroup } from 'react-bootstrap';
 
 import miscFile from '../assets/icons/miscFile.png';
 import pdfFile from '../assets/icons/pdfFile.png';
@@ -24,11 +25,12 @@ class FileUpload extends React.Component {
     this.addButtonClicked = false;
     this.onUploadFunc = null;
     this.onFileDropFunc = null;
+    this.thumbnailFile = '';
   }
 
   componentDidUpdate() {
     this.shouldUpload();
-    console.log("Component updated!");
+    console.log('Component updated!');
   }
 
   shouldUpload = () => {
@@ -43,7 +45,7 @@ class FileUpload extends React.Component {
     let filesObj = {};
     const files = [];
 
-    for (let i = 0; i < this.state.files.length; i++) {
+    for (let i = 0; i < this.state.files.length; i += 1) {
       filesObj = {
         name: this.state.files[i].name,
         size: this.state.files[i].size,
@@ -158,7 +160,7 @@ class FileUpload extends React.Component {
 
     // this.upload(previewFiles);
     // this.addToList(previewFiles);
-    console.log("files after:");
+    console.log('files after:');
     console.log(this.state.files);
   }
 
@@ -167,6 +169,27 @@ class FileUpload extends React.Component {
     if (bytes === 0) return '0 Byte';
     const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
     return `${Math.round(bytes / Math.pow(1024, i), 2)} ${sizes[i]}`;
+  }
+
+  onRadioButtonClick = (evt) => {
+    console.log(`Radio button selected: ${evt.target.value}`);
+    this.thumbnailFile = evt.target.value;
+  }
+
+  onFileDeleteClick = (evt) => {
+    console.log("File delete button clicked! File: " + evt.target.value);
+
+    let currentFiles = this.state.files;
+    let newFiles = [];
+    for (let i = 0; i < currentFiles.length; i += 1) {
+      if (currentFiles[i].name !== evt.target.value) {
+        newFiles.push(currentFiles[i]);
+      } else {
+        console.log("Deleted file: " + currentFiles[i].name);
+      }
+    }
+
+    this.setState({ files: newFiles });
   }
 
   render() {
@@ -178,7 +201,7 @@ class FileUpload extends React.Component {
     this.onUploadFunc = onUpload;
     this.onFileDropFunc = onFileDrop;
 
-    console.log("FileUpload! addButtonClicked: " + addButtonClicked);
+    console.log(`FileUpload! addButtonClicked: ${addButtonClicked}`);
     const previewStyle = {
       display: 'inline',
       width: 100,
@@ -211,27 +234,39 @@ class FileUpload extends React.Component {
         {this.state.files.length > 0 && (
         <>
           <h3>Previews</h3>
-
+          <b>( Select thumbnail image with the radio button )</b>
             {this.state.files.map((file) => {
               console.log(`type: ${file.type}`);
-
               /* Create image file view */
               if (file.type.includes('image')) {
                 return (
-                  <div style={{ margin: '30px' }}>
-                    <img
-                      alt="Preview"
-                      key={file.preview}
-                      src={file.preview}
-                      style={previewStyle}
-                    />
-                    <b>
-                      {' '}
-                      {file.name}
-                      {' ( '}
-                      {this.bytesToSize(file.size)}
-                      {' )'}
-                    </b>
+                  <div className="previewMiscFile">
+                    <InputGroup>
+                      <InputGroup.Prepend>
+                        <InputGroup.Radio
+                          onChange={this.onRadioButtonClick}
+                          value={file.name}
+                          name="thumbnailSelect"
+                          aria-label="Thumbnail select"
+                        />
+                      </InputGroup.Prepend>
+                      <div style={{ margin: '30px' }}>
+                        <img
+                          alt="Preview"
+                          key={file.preview}
+                          src={file.preview}
+                          style={previewStyle}
+                        />
+                        <b>
+                          {' '}
+                          {file.name}
+                          {' ( '}
+                          {this.bytesToSize(file.size)}
+                          {' )'}
+                        </b>
+                      </div>
+                      <button onClick={this.onFileDeleteClick} value={file.name} className="close" />
+                    </InputGroup>
                   </div>
                 );
               }
@@ -239,19 +274,27 @@ class FileUpload extends React.Component {
               /* Create .pdf file view */
               if (file.type.includes('pdf')) {
                 return (
-                  <div style={{ margin: '15px' }}>
-                    <img
-                      alt="Preview"
-                      key={file.preview}
-                      src={pdfFile}
-                      style={previewStyle}
-                    />
-                    <b>
-                      {file.name}
-                      {' ( '}
-                      {this.bytesToSize(file.size)}
-                      {' )'}
-                    </b>
+                  <div className="previewMiscFile">
+                    <InputGroup>
+                      <InputGroup.Prepend>
+                        <InputGroup.Radio disabled aria-label="Radio button for following text input" />
+                      </InputGroup.Prepend>
+                      <div style={{ margin: '15px' }}>
+                        <img
+                          alt="Preview"
+                          key={file.preview}
+                          src={pdfFile}
+                          style={previewStyle}
+                        />
+                        <b>
+                          {file.name}
+                          {' ( '}
+                          {this.bytesToSize(file.size)}
+                          {' )'}
+                        </b>
+                      </div>
+                      <button onClick={this.onFileDeleteClick} value={file.name} className="close" />
+                    </InputGroup>
                   </div>
                 );
               }
@@ -259,19 +302,27 @@ class FileUpload extends React.Component {
               /* Create .zip file view */
               if (file.type.includes('zip')) {
                 return (
-                  <div style={{ margin: '15px' }}>
-                    <img
-                      alt="Preview"
-                      key={file.preview}
-                      src={zipFile}
-                      style={previewStyle}
-                    />
-                    <b>
-                      {file.name}
-                      {' ( '}
-                      {this.bytesToSize(file.size)}
-                      {' )'}
-                    </b>
+                  <div className="previewMiscFile">
+                    <InputGroup>
+                      <InputGroup.Prepend>
+                        <InputGroup.Radio disabled aria-label="Radio button for following text input" />
+                      </InputGroup.Prepend>
+                      <div style={{ margin: '15px' }}>
+                        <img
+                          alt="Preview"
+                          key={file.preview}
+                          src={zipFile}
+                          style={previewStyle}
+                        />
+                        <b>
+                          {file.name}
+                          {' ( '}
+                          {this.bytesToSize(file.size)}
+                          {' )'}
+                        </b>
+                      </div>
+                      <button onClick={this.onFileDeleteClick} value={file.name} className="close" />
+                    </InputGroup>
                   </div>
                 );
               }
@@ -279,19 +330,27 @@ class FileUpload extends React.Component {
               /* Create .csv file view */
               if (file.type.includes('excel')) {
                 return (
-                  <div style={{ margin: '15px' }}>
-                    <img
-                      alt="Preview"
-                      key={file.preview}
-                      src={csvFile}
-                      style={previewStyle}
-                    />
-                    <b>
-                      {file.name}
-                      {' ( '}
-                      {this.bytesToSize(file.size)}
-                      {' )'}
-                    </b>
+                  <div className="previewMiscFile">
+                    <InputGroup>
+                      <InputGroup.Prepend>
+                        <InputGroup.Radio disabled aria-label="Radio button for following text input" />
+                      </InputGroup.Prepend>
+                      <div style={{ margin: '15px' }}>
+                        <img
+                          alt="Preview"
+                          key={file.preview}
+                          src={csvFile}
+                          style={previewStyle}
+                        />
+                        <b>
+                          {file.name}
+                          {' ( '}
+                          {this.bytesToSize(file.size)}
+                          {' )'}
+                        </b>
+                      </div>
+                      <button onClick={this.onFileDeleteClick} value={file.name} className="close" />
+                    </InputGroup>
                   </div>
                 );
               }
@@ -299,42 +358,57 @@ class FileUpload extends React.Component {
               /* Create .txt file view */
               if (file.type.includes('text')) {
                 return (
-                  <div style={{ margin: '15px' }}>
-                    <img
-                      alt="Preview"
-                      key={file.preview}
-                      src={txtFile}
-                      style={previewStyle}
-                    />
-                    <b>
-                      {file.name}
-                      {' ( '}
-                      {this.bytesToSize(file.size)}
-                      {' )'}
-                    </b>
+                  <div className="previewMiscFile">
+                    <InputGroup>
+                      <InputGroup.Prepend>
+                        <InputGroup.Radio disabled aria-label="Radio button for following text input" />
+                      </InputGroup.Prepend>
+                      <div style={{ margin: '15px' }}>
+                        <img
+                          alt="Preview"
+                          key={file.preview}
+                          src={txtFile}
+                          style={previewStyle}
+                        />
+                        <b>
+                          {file.name}
+                          {' ( '}
+                          {this.bytesToSize(file.size)}
+                          {' )'}
+                        </b>
+                      </div>
+                      <button onClick={this.onFileDeleteClick} value={file.name} className="close" />
+                    </InputGroup>
                   </div>
                 );
               }
 
               /* Create file view for all the other unknown file types */
               return (
-                <div style={{ margin: '15px' }}>
-                  <img
-                    alt="Preview"
-                    key={file.preview}
-                    src={miscFile}
-                    style={previewStyle}
-                  />
-                  <b>
-                    {file.name}
-                    {' ( '}
-                    {this.bytesToSize(file.size)}
-                    {' )'}
-                  </b>
+                <div className="previewMiscFile">
+                  <InputGroup>
+                    <InputGroup.Prepend>
+                      <InputGroup.Radio disabled aria-label="Radio button for following text input" />
+                    </InputGroup.Prepend>
+                    <div style={{ margin: '15px' }}>
+                      <img
+                        alt="Preview"
+                        key={file.preview}
+                        src={miscFile}
+                        style={previewStyle}
+                      />
+                      <b>
+                        {file.name}
+                        {' ( '}
+                        {this.bytesToSize(file.size)}
+                        {' )'}
+                      </b>
+                    </div>
+                    <button onClick={this.onFileDeleteClick} value={file.name} className="close" />
+                  </InputGroup>
                 </div>
               );
             })}
-
         </>
         )}
       </div>
