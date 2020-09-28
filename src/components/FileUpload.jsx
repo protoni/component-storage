@@ -206,6 +206,9 @@ class FileUpload extends React.Component {
       display: 'inline',
       width: 100,
       height: 100,
+      borderRadius: '5%',
+      border: 'solid',
+      borderWidth: '1px',
     };
 
     return (
