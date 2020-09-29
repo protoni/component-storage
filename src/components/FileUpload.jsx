@@ -42,6 +42,7 @@ class FileUpload extends React.Component {
   }
 
   informParentForUpload = () => {
+    let data = {};
     let filesObj = {};
     const files = [];
 
@@ -53,7 +54,10 @@ class FileUpload extends React.Component {
       files.push(filesObj);
     }
 
-    this.onUploadFunc(files);
+    data.files = files;
+    data.thumbnail = this.thumbnailFile;
+
+    this.onUploadFunc(data);
   }
 
   saveFiles = (files) => {

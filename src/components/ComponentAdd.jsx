@@ -32,15 +32,17 @@ class ComponentAdd extends React.Component {
     this.addButtonClicked = false;
     this.files = [];
     this.filesDropped = 0;
+    this.thumbnailFile = '';
   }
 
   // Callback function
-  onUpload = (files) => {
+  onUpload = (data) => {
     this.setState({ addButtonClicked: false });
     //this.addButtonClicked = false;
-    this.files = files;
+    this.files = data.files;
+    this.thumbnailFile = data.thumbnail;
     console.log("Uploaded!");
-    console.log(files);
+    console.log(data.files);
   }
 
   // Callback function
@@ -130,6 +132,7 @@ class ComponentAdd extends React.Component {
       package: this.state.packageValue,
       location: this.state.locationValue,
       files: this.files,
+      thumbnail: this.thumbnailFile,
     };
 
     console.log(componentData);
