@@ -39,16 +39,21 @@ class ComponentAdd extends React.Component {
   onUpload = (data) => {
     this.setState({ addButtonClicked: false });
     //this.addButtonClicked = false;
-    this.files = data.files;
-    this.thumbnailFile = data.thumbnail;
+    this.files = data;
     console.log("Uploaded!");
-    console.log(data.files);
+    console.log(data);
   }
 
   // Callback function
   onFileDrop = (filesUploaded) => {
     this.filesDropped += filesUploaded;
     console.log("Incremented file counter by: " + filesUploaded);
+  }
+
+  // Callback function
+  onThumbnailSelect = (fileSelected) => {
+    this.thumbnailFile = fileSelected;
+    console.log("ComponentAdd! Thumbnail selected: " + this.thumbnailFile);
   }
 
   add = (componentData) => {
@@ -92,16 +97,17 @@ class ComponentAdd extends React.Component {
     this.setState({ locationValue: evt.target.value });
   }
 
-  waitFileUpload = () => {
+  waitFileUpload = async () => {
     for (let i = 0; i < FILE_UPLOAD_TIMEOUT; i += 1) {
       if (this.filesDropped === this.files.length) {
         return;
       }
 
-      this.sleep(1000);
+      /* eslint-disable no-await-in-loop */
+      await this.sleep(1000);
     }
 
-    console.log("Waiting for files to upload timed out!");
+    console.log('Waiting for files to upload timed out!');
   }
 
   addComponentData = async (data) => {
@@ -121,6 +127,7 @@ class ComponentAdd extends React.Component {
       `, Quantity: ${this.state.quantityValue}`,
       `, Package: ${this.state.packageValue}`,
       `, Location: ${this.state.locationValue}`,
+      `, Thumbnail: ${this.thumbnailFile}`,
     );
 
     const componentData = {
@@ -224,6 +231,7 @@ class ComponentAdd extends React.Component {
             addButtonClicked={this.state.addButtonClicked}
             onUpload={this.onUpload}
             onFileDrop={this.onFileDrop}
+            onThumbnailSelect={this.onThumbnailSelect}
           />
 
         </Modal.Body>

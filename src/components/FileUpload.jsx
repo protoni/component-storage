@@ -25,6 +25,7 @@ class FileUpload extends React.Component {
     this.addButtonClicked = false;
     this.onUploadFunc = null;
     this.onFileDropFunc = null;
+    this.onThumbnailSelectFunc = null;
     this.thumbnailFile = '';
   }
 
@@ -42,7 +43,6 @@ class FileUpload extends React.Component {
   }
 
   informParentForUpload = () => {
-    let data = {};
     let filesObj = {};
     const files = [];
 
@@ -54,10 +54,9 @@ class FileUpload extends React.Component {
       files.push(filesObj);
     }
 
-    data.files = files;
-    data.thumbnail = this.thumbnailFile;
-
-    this.onUploadFunc(data);
+    console.log("Data obj:");
+    console.log(files);
+    this.onUploadFunc(files);
   }
 
   saveFiles = (files) => {
@@ -178,6 +177,7 @@ class FileUpload extends React.Component {
   onRadioButtonClick = (evt) => {
     console.log(`Radio button selected: ${evt.target.value}`);
     this.thumbnailFile = evt.target.value;
+    this.onThumbnailSelectFunc(this.thumbnailFile);
   }
 
   onFileDeleteClick = (evt) => {
@@ -198,12 +198,13 @@ class FileUpload extends React.Component {
 
   render() {
     const {
-      partNum, addButtonClicked, onUpload, onFileDrop,
+      partNum, addButtonClicked, onUpload, onFileDrop, onThumbnailSelect,
     } = this.props;
     this.partNum = partNum;
     this.addButtonClicked = addButtonClicked;
     this.onUploadFunc = onUpload;
     this.onFileDropFunc = onFileDrop;
+    this.onThumbnailSelectFunc = onThumbnailSelect;
 
     console.log(`FileUpload! addButtonClicked: ${addButtonClicked}`);
     const previewStyle = {
@@ -428,6 +429,7 @@ FileUpload.defaultProps = {
   addButtonClicked: PropTypes.bool,
   onUpload: PropTypes.func,
   onFileDrop: PropTypes.func,
+  onThumbnailSelect: PropTypes.func,
 };
 
 FileUpload.propTypes = {
@@ -435,6 +437,7 @@ FileUpload.propTypes = {
   addButtonClicked: PropTypes.bool,
   onUpload: PropTypes.func,
   onFileDrop: PropTypes.func,
+  onThumbnailSelect: PropTypes.func,
 };
 
 export default FileUpload;
