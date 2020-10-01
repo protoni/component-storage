@@ -10,10 +10,10 @@ import {
 } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import FileUpload from './FileUpload.jsx'
+import FileUpload from './FileUpload.jsx';
 
 // ( seconds )
-var FILE_UPLOAD_TIMEOUT = 60;
+const FILE_UPLOAD_TIMEOUT = 60;
 
 class ComponentAdd extends React.Component {
   constructor(props) {
@@ -38,22 +38,42 @@ class ComponentAdd extends React.Component {
   // Callback function
   onUpload = (data) => {
     this.setState({ addButtonClicked: false });
-    //this.addButtonClicked = false;
+    // this.addButtonClicked = false;
     this.files = data;
-    console.log("Uploaded!");
+    console.log('Uploaded!');
     console.log(data);
   }
 
   // Callback function
   onFileDrop = (filesUploaded) => {
     this.filesDropped += filesUploaded;
-    console.log("Incremented file counter by: " + filesUploaded);
+    console.log(`Incremented file counter by: ${filesUploaded}`);
+  }
+
+  // Callback function
+  onFileRemove = (newFiles) => {
+    /*
+    const newFiles = [];
+
+    for (let i = 0; i < this.files.length; i += 1) {
+      if (file !== this.files[i].name) {
+        console.log(`file: ${file} != filename: ${this.files[i].name}`);
+
+        if (!newFiles.includes(this.files[i].name)) {
+          console.log(`newFiles doesn't include: ${this.files[i].name}`);
+          newFiles.push(this.filesToStore[i]);
+        }
+      }
+    }
+    */
+    this.filesDropped = newFiles.length;
+    this.filesToStore = newFiles;
   }
 
   // Callback function
   onThumbnailSelect = (fileSelected) => {
     this.thumbnailFile = fileSelected;
-    console.log("ComponentAdd! Thumbnail selected: " + this.thumbnailFile);
+    console.log(`ComponentAdd! Thumbnail selected: ${this.thumbnailFile}`);
   }
 
   add = (componentData) => {
@@ -112,7 +132,7 @@ class ComponentAdd extends React.Component {
 
   addComponentData = async (data) => {
     await this.waitFileUpload();
-    console.log('this.filesDropped: ' + this.filesDropped + ', this.files.length: ' + this.files.length);
+    console.log(`this.filesDropped: ${this.filesDropped}, this.files.length: ${this.files.length}`);
     data.files = this.files;
     this.add(data);
   }
@@ -221,7 +241,7 @@ class ComponentAdd extends React.Component {
             </DropdownButton>
             <FormControl aria-describedby="basic-addon1" />
           </InputGroup>
-          <div style={{marginTop: 10, marginBottom: 10 }}>
+          <div style={{ marginTop: 10, marginBottom: 10 }}>
             <Button variant="primary" onClick={this.onAddButtonClick}>
               Add
             </Button>
@@ -232,6 +252,7 @@ class ComponentAdd extends React.Component {
             onUpload={this.onUpload}
             onFileDrop={this.onFileDrop}
             onThumbnailSelect={this.onThumbnailSelect}
+            onFileRemove={this.onFileRemove}
           />
 
         </Modal.Body>
