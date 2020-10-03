@@ -1,7 +1,8 @@
+/* eslint-disable import/extensions */
 /* eslint-disable react/jsx-filename-extension */
 /* eslint-disable no-undef */
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import FileUpload from '../components/FileUpload.jsx';
 
 it('renders correctly', () => {

@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable no-undef */
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
@@ -6,7 +8,7 @@ import App from '../App';
 
 test('renders main component', () => {
   const { getByTestId } = render(<Router><App /></Router>);
-  const mainElement = getByTestId("MainWrapper");
+  const mainElement = getByTestId('Main');
   expect(mainElement).toBeInTheDocument();
 });
 
@@ -48,5 +50,4 @@ test('routes correctly', () => {
 
   // Check that the status bar is showing
   expect(screen.getByTestId('Settings')).toBeInTheDocument();
-
 });

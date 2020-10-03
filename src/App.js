@@ -105,7 +105,7 @@ class App extends React.Component {
           </ErrorBoundary>
         </div>
 
-        <div data-testid="MainWrapper" className="main">
+        <div className="main">
           <Main />
         </div>
 
