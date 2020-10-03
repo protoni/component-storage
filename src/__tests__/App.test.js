@@ -11,7 +11,7 @@ test('renders main component', () => {
 });
 
 test('routes correctly', () => {
-  const { getByTestId } = render(<Router><App /></Router>);
+  render(<Router><App /></Router>);
 
   // check that we start from Home page
   expect(screen.getByTestId('Home')).toBeInTheDocument();
@@ -22,5 +22,31 @@ test('routes correctly', () => {
 
   // Check that we changed to the Storage page
   expect(screen.getByTestId('ComponentStorage')).toBeInTheDocument();
+
+  // Click Status text link
+  userEvent.click(screen.getByTestId('StatusLink1'), leftClick);
+
+  // Check that the status bar is showing
+  expect(screen.getByTestId('Status')).toBeInTheDocument();
+
+  // Click Status icon link ( Double click because it is toggled )
+  userEvent.click(screen.getByTestId('StatusLink2'), leftClick);
+  userEvent.click(screen.getByTestId('StatusLink2'), leftClick);
+
+  // Check that the status bar is showing
+  expect(screen.getByTestId('Status')).toBeInTheDocument();
+
+  // Click Status text link
+  userEvent.click(screen.getByTestId('SettingsLink1'), leftClick);
+
+  // Check that the status bar is showing
+  expect(screen.getByTestId('Settings')).toBeInTheDocument();
+
+  // Click Status icon link ( Double click because it is toggled )
+  userEvent.click(screen.getByTestId('SettingsLink2'), leftClick);
+  userEvent.click(screen.getByTestId('SettingsLink2'), leftClick);
+
+  // Check that the status bar is showing
+  expect(screen.getByTestId('Settings')).toBeInTheDocument();
 
 });

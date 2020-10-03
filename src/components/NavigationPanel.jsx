@@ -20,20 +20,16 @@ export default class NavigationPanel extends React.Component {
   }
 
   render() {
-
-    
-
     return (
       <div>
-        
         <ul className="linkList">
           <li className="nav_home_text">
-            <NavLink className="nav_home_text" exact activeClassName="active" to="/" onMouseDown={() => this.handleChange('home')}>
+            <NavLink data-testid="HomeLink" className="nav_home_text" exact activeClassName="active" to="/" onMouseDown={() => this.handleChange('home')}>
               Home
             </NavLink>
           </li>
           <li className="nav_home_icon">
-            <NavLink className="nav_home_icon" exact activeClassName="active" to="/" onMouseDown={() => this.handleChange('home')}>
+            <NavLink data-testid="HomeLink" className="nav_home_icon" exact activeClassName="active" to="/" onMouseDown={() => this.handleChange('home')}>
               <img src={homeIcon} alt="" />
             </NavLink>
           </li>
@@ -49,29 +45,28 @@ export default class NavigationPanel extends React.Component {
           </li>
 
           <li className="nav_settings_text">
-            <NavLink className="nav_settings_text" to="/" onMouseDown={() => this.handleChange('settings')}>
+            <NavLink data-testid="SettingsLink1" className="nav_settings_text" to="/" onMouseDown={() => this.handleChange('settings')}>
               Settings
             </NavLink>
           </li>
           <li className="nav_settings_icon">
-            <NavLink className="nav_settings_icon" to="/" onMouseDown={() => this.handleChange('settings')}>
+            <NavLink data-testid="SettingsLink2" className="nav_settings_icon" to="/" onMouseDown={() => this.handleChange('settings')}>
               <img src={settingsIcon} alt="" />
             </NavLink>
           </li>
 
           <li className="nav_status_text">
-            <NavLink className="nav_status_text" to="/" onMouseDown={() => this.handleChange('status')}>
+            <NavLink data-testid="StatusLink1" className="nav_status_text" to="/" onMouseDown={() => this.handleChange('status')}>
               Status
             </NavLink>
           </li>
           <li className="nav_status_icon">
-            <NavLink className="nav_status_icon" to="/" onMouseDown={() => this.handleChange('status')}>
+            <NavLink data-testid="StatusLink2" className="nav_status_icon" to="/" onMouseDown={() => this.handleChange('status')}>
               <img src={statusIcon} alt="" />
             </NavLink>
           </li>
 
         </ul>
-        
       </div>
     );
   }

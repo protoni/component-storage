@@ -62,6 +62,12 @@ class StorageItem extends React.Component {
     this.getComponentData(id).then((data) => {
       console.log('data:');
       console.log(data.component);
+
+      if (data.component === false) {
+        console.log('data.component empty!');
+        return;
+      }
+
       this.filePath = `${data.filePath + data.component[0].productId}\\`;
       console.log(`filePath: ${this.filePath}`);
       if (data !== false) {
@@ -263,11 +269,11 @@ class StorageItem extends React.Component {
 
     return (
       <div>
-        <h2 style={{"text-align":"center"}}>
+        <h2 style={{'text-align':'center'}}>
           {this.state.id}
         </h2>
         <p>{' '}</p>
-        <div style={{"text-align":"center"}}>
+        <div style={{'text-align':'center'}}>
           {this.imageView}
         </div>
         <p>{' '}</p>
