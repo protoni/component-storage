@@ -221,7 +221,7 @@ class FileUpload extends React.Component {
 
     return (
       <div>
-        <Dropzone onDrop={this.onPreviewDrop}>
+        <Dropzone data-testid="Dropzone" onDrop={this.onPreviewDrop}>
           {({ getRootProps, getInputProps, isDragActive }) => (
             <div
               {...getRootProps()}

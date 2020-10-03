@@ -78,7 +78,7 @@ class ComponentStorage extends React.Component {
   render() {
     console.log(`table: ${this.table}`);
     return (
-      <div className="storageDiv">
+      <div data-testid="ComponentStorage" className="storageDiv">
         <h2>Component storage</h2>
         <div style={{ marginTop: 10, marginBottom: 10 }}>
           <Button variant="primary" onClick={this.onGetAllButtonClick}>

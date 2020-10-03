@@ -6,7 +6,7 @@ class Home extends React.Component {
   render() {
       
       return (
-          <div>
+          <div data-testid="Home">
               <h2>Home</h2>
               <h2 style={{color:'blue'}}>
                 <FaBeer />

@@ -4,14 +4,14 @@ import NavigationPanel from './components/NavigationPanel';
 import Main from './components/Main';
 import SettingsBar from './components/SettingsBar';
 import StatusBar from './components/StatusBar';
+import ErrorBoundary from './ErrorBoundary';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      columns: []
+      columns: [],
     };
 
     // Settings panel
@@ -28,7 +28,7 @@ class App extends React.Component {
     this.handleViewChange = this.handleViewChange.bind(this);
     this.consoleLoggingOn = true;
   }
-  
+
   // Initialization function ran by constructor
   init() {
     this.updateSettingsBar();
@@ -36,19 +36,18 @@ class App extends React.Component {
   }
 
   log = (text) => {
-    if(this.consoleLoggingOn) {
+    if (this.consoleLoggingOn) {
       console.log(text);
     }
   }
 
-
-  // NavigationPanel callback function. Determine what to do when a link is clicked 
+  // NavigationPanel callback function. Determine what to do when a link is clicked
   // on the navigation panel. 'view' parameter is a String given by onMouseDown method of a link.
   handleViewChange = (view) => {
-    this.log("current view: " + view)
+    this.log(`current view: ${view}`);
 
-    if(view === "settings") {
-      if(this.showSettingsBar) {
+    if (view === 'settings') {
+      if (this.showSettingsBar) {
         this.showSettingsBar = false;
       } else {
         this.showStatusBar = false;
@@ -56,8 +55,8 @@ class App extends React.Component {
       }
     }
 
-    if(view === "status") {
-      if(this.showStatusBar) {
+    if (view === 'status') {
+      if (this.showStatusBar) {
         this.showStatusBar = false;
       } else {
         this.showSettingsBar = false;
@@ -65,58 +64,59 @@ class App extends React.Component {
       }
     }
 
-    this.setState({view: view})
+    this.setState({ view });
     this.updateSettingsBar();
     this.updateStatusBar();
-    this.log("current state: " + this.state.view)
+    this.log(`current state: ${this.state.view}`);
   }
 
   // Created a <div> element for settings bar. if this.showSettingsBar is false, creates
   // a empty <div> element.
   updateSettingsBar = () => {
-    if(this.showSettingsBar) {
-      this.log("settings panel on ")
-      this.settingsBar = <SettingsBar />
+    if (this.showSettingsBar) {
+      this.log('settings panel on ');
+      this.settingsBar = <SettingsBar />;
     } else {
-      this.log("settings panel off ")
-      this.settingsBar=<div></div>
+      this.log('settings panel off ');
+      this.settingsBar = <div />;
     }
   }
 
   // Created a <div> element for status bar. if this.showStatusBar is false, creates
   // a empty <div> element.
   updateStatusBar = () => {
-    if(this.showStatusBar) {
-      this.log("Status panel on ")
-      this.statusBar = <StatusBar />
+    if (this.showStatusBar) {
+      this.log('Status panel on ');
+      this.statusBar = <StatusBar />;
     } else {
-      this.log("Status panel off ")
-      this.statusBar=<div></div>
+      this.log('Status panel off ');
+      this.statusBar = <div />;
     }
   }
 
-  render(){
-  return (
-    
-    <div className="wrapper">
+  render() {
+    return (
 
-      <div className="leftSidebar">
-        <NavigationPanel onChange={this.handleViewChange} />
+      <div className="wrapper">
+
+        <div className="leftSidebar">
+          <ErrorBoundary>
+            <NavigationPanel placeholder="Navigationpanel" onChange={this.handleViewChange} />
+          </ErrorBoundary>
+        </div>
+
+        <div data-testid="MainWrapper" className="main">
+          <Main />
+        </div>
+
+        {this.settingsBar}
+
+        {this.statusBar}
+
       </div>
 
-      <div className="main">
-        <Main />
-      </div>
-      
-      {this.settingsBar}
-
-      {this.statusBar}
-      
-    </div>
-    
-    
-  );
-}
+    );
+  }
 }
 
 export default App;
