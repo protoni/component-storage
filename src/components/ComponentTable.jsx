@@ -41,8 +41,6 @@ class ComponentTable extends React.Component {
             );
           } if (index === 1) {
             return <td key={index}>{data[rowIndex].name}</td>;
-          } if (index === 2) {
-            return <td key={index}>{data[rowIndex].description}</td>;
           } if (index === 3) {
             return <td key={index}>{data[rowIndex].manufacturer}</td>;
           } if (index === 4) {
@@ -52,7 +50,7 @@ class ComponentTable extends React.Component {
           } if (index === 6) {
             return <td key={index}>{data[rowIndex].location}</td>;
           }
-          return <td key={index}>1</td>;
+          return null;
         })}
       </tr>
     );
@@ -65,9 +63,13 @@ class ComponentTable extends React.Component {
         <thead className="thead-dark" key="header-1">
           <tr>
             <th>#</th>
-            {this.columnNames.map((item, index) => (
-              <th key={item.id}>{this.columnNames[index]}</th>
-            ))}
+            {this.columnNames.map((item, index) => {
+              if (this.columnNames[index] !== 'Description') {
+                return <th key={item.id}>{this.columnNames[index]}</th>;
+              }
+
+              return null;
+            })}
           </tr>
         </thead>
         <tbody>
