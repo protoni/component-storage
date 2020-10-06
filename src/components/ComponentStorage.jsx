@@ -68,6 +68,7 @@ class ComponentStorage extends React.Component {
   }
 
   callbackModal = () => {
+    console.log("CS closing")
     this.setState({ showModal: false });
   }
 

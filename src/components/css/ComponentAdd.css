@@ -1,0 +1,86 @@
+
+
+.dropZone {
+    padding: 4em 0;
+    text-align: center;
+    position: relative;
+    width: 100%;
+    height: 10em;
+    border-width: 2px;
+    border-color: rgb(102, 102, 102);
+    border-style: dashed;
+    border-radius: 5px;
+    background-color: back;
+}
+
+.hoveredDropZone {
+    padding: 4em 0;
+    text-align: center;
+    position: relative;
+    width: 100%;
+    height: 10em;
+    border-width: 2px;
+    border-color: rgb(140, 183, 223);
+    border-style: dashed;
+    border-radius: 5px;
+    background-color: back;
+}
+
+.previewMiscFile {
+    margin: 5px;
+    border-width: 1px;
+    border-color: rgba(87, 86, 86, 0.555);
+    border-style: solid;
+    border-radius: 5px;
+}
+
+.previewImage {
+    display: 'inline';
+    width: 100;
+    height: 100;
+}
+
+.close {
+    display: inline-block;
+    border: none;
+    outline: none; 
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    width: 15px;
+    height: 15px;
+    opacity: 0.3;
+    color: red;
+  }
+  .close:hover {
+    border: none;
+    outline: none; 
+    opacity: 1;
+    color: red;
+  }
+  .close:before, .close:after {
+    border: none;
+    outline: none; 
+    position: absolute;
+    left: 0px;
+    content: ' ';
+    height: 15px;
+    width: 4px;
+    background-color: red;
+  }
+  .close:before {
+    outline: none; 
+    border: none;
+    transform: rotate(45deg);
+  }
+  .close:after {
+    outline: none; 
+    border: none;
+    transform: rotate(-45deg);
+  }
+
+  .previewMiscFile:hover .close {
+    border: none;
+    outline: none; 
+    display: inline-block;
+}

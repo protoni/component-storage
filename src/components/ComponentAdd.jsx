@@ -11,6 +11,7 @@ import {
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import FileUpload from './FileUpload.jsx';
+import './css/ComponentAdd.css';
 
 // ( seconds )
 const FILE_UPLOAD_TIMEOUT = 60;
@@ -20,25 +21,30 @@ class ComponentAdd extends React.Component {
     super(props);
     this.state = {
       showModal: false,
-      idValue: '',
-      nameValue: '',
-      descValue: '',
-      manufValue: '',
-      quantityValue: '',
-      packageValue: '',
-      locationValue: '',
+      formValues: {
+        idValue: '',
+        nameValue: '',
+        descValue: '',
+        manufValue: '',
+        quantityValue: '',
+        packageValue: '',
+        locationValue: '',
+      },
       addButtonClicked: false,
+      showOnClosePrompt: false,
     };
+    this.show = true;
     this.addButtonClicked = false;
     this.files = [];
     this.filesDropped = 0;
     this.thumbnailFile = '';
+    this.onHideFunc = null;
+    this.formChanged = false;
   }
 
   // Callback function
   onUpload = (data) => {
     this.setState({ addButtonClicked: false });
-    // this.addButtonClicked = false;
     this.files = data;
     console.log('Uploaded!');
     console.log(data);
@@ -52,20 +58,6 @@ class ComponentAdd extends React.Component {
 
   // Callback function
   onFileRemove = (newFiles) => {
-    /*
-    const newFiles = [];
-
-    for (let i = 0; i < this.files.length; i += 1) {
-      if (file !== this.files[i].name) {
-        console.log(`file: ${file} != filename: ${this.files[i].name}`);
-
-        if (!newFiles.includes(this.files[i].name)) {
-          console.log(`newFiles doesn't include: ${this.files[i].name}`);
-          newFiles.push(this.filesToStore[i]);
-        }
-      }
-    }
-    */
     this.filesDropped = newFiles.length;
     this.filesToStore = newFiles;
   }
@@ -90,31 +82,45 @@ class ComponentAdd extends React.Component {
   }
 
   handleIdChange = (evt) => {
-    this.setState({ idValue: evt.target.value });
+    const { formValues } = this.state;
+    formValues.idValue = evt.target.value;
+    this.setState({ formValues });
   }
 
   handleNameChange = (evt) => {
-    this.setState({ nameValue: evt.target.value });
+    const { formValues } = this.state;
+    formValues.nameValue = evt.target.value;
+    this.setState({ formValues });
   }
 
   handleDescChange = (evt) => {
-    this.setState({ descValue: evt.target.value });
+    const { formValues } = this.state;
+    formValues.descValue = evt.target.value;
+    this.setState({ formValues });
   }
 
   handleManufChange = (evt) => {
-    this.setState({ manufValue: evt.target.value });
+    const { formValues } = this.state;
+    formValues.manufValue = evt.target.value;
+    this.setState({ formValues });
   }
 
   handleQuantityChange = (evt) => {
-    this.setState({ quantityValue: evt.target.value });
+    const { formValues } = this.state;
+    formValues.quantityValue = evt.target.value;
+    this.setState({ formValues });
   }
 
   handlePackageChange = (evt) => {
-    this.setState({ packageValue: evt.target.value });
+    const { formValues } = this.state;
+    formValues.packageValue = evt.target.value;
+    this.setState({ formValues });
   }
 
   handleLocationChange = (evt) => {
-    this.setState({ locationValue: evt.target.value });
+    const { formValues } = this.state;
+    formValues.locationValue = evt.target.value;
+    this.setState({ formValues });
   }
 
   waitFileUpload = async () => {
@@ -140,24 +146,24 @@ class ComponentAdd extends React.Component {
   onAddButtonClick = () => {
     console.log(
       `${'clicked! '
-      + 'ID: '}${this.state.idValue
-      }, Name: ${this.state.nameValue
-      }, Description: ${this.state.descValue
-      }, Manufacturer: ${this.state.manufValue}`,
-      `, Quantity: ${this.state.quantityValue}`,
-      `, Package: ${this.state.packageValue}`,
-      `, Location: ${this.state.locationValue}`,
+      + 'ID: '}${this.state.formValues.idValue
+      }, Name: ${this.state.formValues.nameValue
+      }, Description: ${this.state.formValues.descValue
+      }, Manufacturer: ${this.state.formValues.manufValue}`,
+      `, Quantity: ${this.state.formValues.quantityValue}`,
+      `, Package: ${this.state.formValues.packageValue}`,
+      `, Location: ${this.state.formValues.locationValue}`,
       `, Thumbnail: ${this.thumbnailFile}`,
     );
 
     const componentData = {
-      id: this.state.idValue,
-      name: this.state.nameValue,
-      description: this.state.descValue,
-      manufacturer: this.state.manufValue,
-      quantity: this.state.quantityValue,
-      package: this.state.packageValue,
-      location: this.state.locationValue,
+      id: this.state.formValues.idValue,
+      name: this.state.formValues.nameValue,
+      description: this.state.formValues.descValue,
+      manufacturer: this.state.formValues.manufValue,
+      quantity: this.state.formValues.quantityValue,
+      package: this.state.formValues.packageValue,
+      location: this.state.formValues.locationValue,
       files: this.files,
       thumbnail: this.thumbnailFile,
     };
@@ -174,19 +180,93 @@ class ComponentAdd extends React.Component {
 
   sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+  canClose = () => {
+    const items = Object.values(this.state.formValues);
+    // const values = Object.values(fruits)
+
+    for (let i = 0; i < items.length; i += 1) {
+      if (items[i] !== '') {
+        return false;
+      }
+    }
+
+    if (this.filesDropped > 0) {
+      return false;
+    }
+
+    return true;
+  }
+
+  closeModal = () => {
+    console.log('closing..');
+    this.setState({ showModal: false, showOnClosePrompt: false });
+    this.onHideFunc();
+  }
+
+  onModalClose = () => {
+    if (this.canClose()) {
+      this.closeModal();
+    } else {
+      console.log('Unsaved changes!');
+      this.setState({ showOnClosePrompt: true });
+    }
+  }
+
+  promptYesBtn = (evt) => {
+    this.closeModal();
+  }
+
+  promptNoBtn = (evt) => {
+    this.setState({ showOnClosePrompt: false });
+  }
+
+  generateOnClosePrompt = () => {
+    console.log('showOnClosePrompt: ' + this.state.showOnClosePrompt);
+    if (this.state.showOnClosePrompt) {
+      this.onClosePrompt = (
+        <div style={{ position: 'absolute', right: '40px', top: '5px', fontSize: '0.5em' }}>
+          <div>
+            <b>
+              Unsaved changes!
+            </b>
+          </div>
+          <div>
+            {'Discard changes and close?'}
+            {' '}
+            <Button onClick={this.promptYesBtn} size="sm" variant="outline-danger">Yes</Button>
+            {' '}
+            <Button onClick={this.promptNoBtn} size="sm" variant="outline-dark">No</Button>
+            {' '}
+          </div>
+        </div>
+      );
+    } else {
+      this.onClosePrompt = <div />;
+    }
+  }
+
   render() {
     const { show, onHide } = this.props;
+    this.onHideFunc = onHide;
+    this.generateOnClosePrompt();
+
     return (
       <Modal
-        show={show}
+        show={this.state.showModal | show}
         onHide={onHide}
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
+        backdrop="static"
+        keyboard={false}
       >
-        <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Add component
+        <Modal.Header>
+          <Modal.Title>
+            Add
+            <div>
+              {this.onClosePrompt}
+              <button onClick={this.onModalClose} className="close" />
+            </div>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
