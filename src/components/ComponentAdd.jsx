@@ -20,6 +20,7 @@ const FILE_UPLOAD_TIMEOUT = 60;
 class ComponentAdd extends React.Component {
   constructor(props) {
     super(props);
+    this.defaultTab = 'component';
     this.state = {
       showModal: false,
       formValues: {
@@ -35,7 +36,7 @@ class ComponentAdd extends React.Component {
       },
       addButtonClicked: false,
       showOnClosePrompt: false,
-      currentTab: 'component',
+      currentTab: this.defaultTab,
     };
     this.show = true;
     this.addButtonClicked = false;
@@ -91,7 +92,20 @@ class ComponentAdd extends React.Component {
       });
   }
 
+  printValues = () => {
+    const items = Object.values(this.state.formValues);
+    // const values = Object.values(fruits)
+
+    console.log('form values: ');
+    for (let i = 0; i < items.length; i += 1) {
+      console.log(items[i]);
+    }
+
+    console.log(`file count: ${this.filesDropped}`);
+  }
+
   handleIdChange = (evt) => {
+    this.printValues();
     const { formValues } = this.state;
     formValues.idValue = evt.target.value;
     this.setState({ formValues });
@@ -247,6 +261,7 @@ class ComponentAdd extends React.Component {
   }
 
   promptYesBtn = (evt) => {
+    this.cleanup();
     this.closeModal();
   }
 
@@ -255,7 +270,7 @@ class ComponentAdd extends React.Component {
   }
 
   generateOnClosePrompt = () => {
-    console.log(`showOnClosePrompt: ${  this.state.showOnClosePrompt}`);
+    console.log(`showOnClosePrompt: ${this.state.showOnClosePrompt}`);
     if (this.state.showOnClosePrompt) {
       this.onClosePrompt = (
         <div style={{
@@ -282,6 +297,41 @@ class ComponentAdd extends React.Component {
     }
   }
 
+  cleanFormValues = () => {
+    const newFormValues = {
+      idValue: '',
+      nameValue: '',
+      descValue: '',
+      manufValue: '',
+      quantityValue: '',
+      packageValue: '',
+      locationValue: '',
+      commentValue: '',
+      categoryValue: '',
+    };
+
+    this.setState({ formValues: newFormValues });
+  }
+
+  cleanFilesArray = () => {
+    this.filesDropped = 0;
+    this.thumbnailFile = '';
+  }
+
+  cleanup = () => {
+    // Set currentTab to component
+    this.setState({ currentTab: this.defaultTab });
+
+    // Clean state.formValues
+    this.cleanFormValues();
+
+    // Remove files from the files array
+    this.cleanFilesArray();
+
+    // Set modal close states
+    this.closeModal();
+  }
+
   render() {
     const { show, onHide } = this.props;
     this.onHideFunc = onHide;
@@ -301,7 +351,9 @@ class ComponentAdd extends React.Component {
         <Modal.Header>
           <Modal.Title>
             <div className="header">
-              Add {this.state.currentTab}
+              Add
+              {' '}
+              {this.state.currentTab}
             </div>
             <div>
               {this.onClosePrompt}
@@ -346,11 +398,6 @@ class ComponentAdd extends React.Component {
             <FormControl onChange={this.handleLocationChange} aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
           </InputGroup>
 
-          <b>Comment</b>
-          <InputGroup size="lg" className="mb-3">
-            <FormControl as="textarea" onChange={this.handleCommentChange} aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
-          </InputGroup>
-
           <b>Category</b>
           <InputGroup size="sm" className="mb-3">
             <DropdownButton
@@ -367,6 +414,12 @@ class ComponentAdd extends React.Component {
             </DropdownButton>
             <FormControl aria-describedby="basic-addon1" />
           </InputGroup>
+
+          <b>Comment</b>
+          <InputGroup size="lg" className="mb-3">
+            <FormControl as="textarea" onChange={this.handleCommentChange} aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
+          </InputGroup>
+
           <div style={{ marginTop: 10, marginBottom: 10 }}>
             <Button variant="primary" onClick={this.onAddButtonClick}>
               Add
