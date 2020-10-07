@@ -1,4 +1,7 @@
 
+.header {
+  font-size: min(max(16px, 4vw), 24px);
+}
 
 .close {
   display: inline-block;

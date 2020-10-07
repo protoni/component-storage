@@ -11,6 +11,7 @@ import {
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import FileUpload from './FileUpload.jsx';
+import ComponentAddTabs from './ComponentAddTabs.jsx';
 import './css/ComponentAdd.css';
 
 // ( seconds )
@@ -29,9 +30,12 @@ class ComponentAdd extends React.Component {
         quantityValue: '',
         packageValue: '',
         locationValue: '',
+        commentValue: '',
+        categoryValue: '',
       },
       addButtonClicked: false,
       showOnClosePrompt: false,
+      currentTab: 'component',
     };
     this.show = true;
     this.addButtonClicked = false;
@@ -66,6 +70,12 @@ class ComponentAdd extends React.Component {
   onThumbnailSelect = (fileSelected) => {
     this.thumbnailFile = fileSelected;
     console.log(`ComponentAdd! Thumbnail selected: ${this.thumbnailFile}`);
+  }
+
+  // Callback function
+  callbackTabChange = (tab) => {
+    console.log(`Tab changed to: ${tab}`);
+    this.setState({ currentTab: tab });
   }
 
   add = (componentData) => {
@@ -123,6 +133,12 @@ class ComponentAdd extends React.Component {
     this.setState({ formValues });
   }
 
+  handleCommentChange = (evt) => {
+    const { formValues } = this.state;
+    formValues.commentValue = evt.target.value;
+    this.setState({ formValues });
+  }
+
   waitFileUpload = async () => {
     for (let i = 0; i < FILE_UPLOAD_TIMEOUT; i += 1) {
       if (this.filesDropped === this.files.length) {
@@ -144,26 +160,45 @@ class ComponentAdd extends React.Component {
   }
 
   onAddButtonClick = () => {
+    const { formValues, currentTab } = this.state;
+    const {
+      idValue,
+      nameValue,
+      descValue,
+      manufValue,
+      quantityValue,
+      packageValue,
+      locationValue,
+      commentValue,
+      categoryValue,
+    } = formValues;
+
     console.log(
       `${'clicked! '
-      + 'ID: '}${this.state.formValues.idValue
-      }, Name: ${this.state.formValues.nameValue
-      }, Description: ${this.state.formValues.descValue
-      }, Manufacturer: ${this.state.formValues.manufValue}`,
-      `, Quantity: ${this.state.formValues.quantityValue}`,
-      `, Package: ${this.state.formValues.packageValue}`,
-      `, Location: ${this.state.formValues.locationValue}`,
+      + 'ID: '}${idValue
+      }, Name: ${nameValue
+      }, Description: ${descValue
+      }, Manufacturer: ${manufValue}`,
+      `, Quantity: ${quantityValue}`,
+      `, Package: ${packageValue}`,
+      `, Location: ${locationValue}`,
+      `, Comment: ${commentValue}`,
+      `, Category: ${categoryValue}`,
+      `, Type: ${currentTab}`,
       `, Thumbnail: ${this.thumbnailFile}`,
     );
 
     const componentData = {
-      id: this.state.formValues.idValue,
-      name: this.state.formValues.nameValue,
-      description: this.state.formValues.descValue,
-      manufacturer: this.state.formValues.manufValue,
-      quantity: this.state.formValues.quantityValue,
-      package: this.state.formValues.packageValue,
-      location: this.state.formValues.locationValue,
+      id: idValue,
+      name: nameValue,
+      description: descValue,
+      manufacturer: manufValue,
+      quantity: quantityValue,
+      package: packageValue,
+      location: locationValue,
+      comment: commentValue,
+      category: categoryValue,
+      type: currentTab,
       files: this.files,
       thumbnail: this.thumbnailFile,
     };
@@ -175,7 +210,6 @@ class ComponentAdd extends React.Component {
     this.isLoading = true;
 
     this.setState({ addButtonClicked: true });
-    // this.addButtonClicked = true;
   }
 
   sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -221,10 +255,13 @@ class ComponentAdd extends React.Component {
   }
 
   generateOnClosePrompt = () => {
-    console.log('showOnClosePrompt: ' + this.state.showOnClosePrompt);
+    console.log(`showOnClosePrompt: ${  this.state.showOnClosePrompt}`);
     if (this.state.showOnClosePrompt) {
       this.onClosePrompt = (
-        <div style={{ position: 'absolute', right: '40px', top: '5px', fontSize: '0.5em' }}>
+        <div style={{
+          position: 'absolute', right: '40px', top: '50px', fontSize: '0.5em',
+        }}
+        >
           <div>
             <b>
               Unsaved changes!
@@ -260,9 +297,12 @@ class ComponentAdd extends React.Component {
         backdrop="static"
         keyboard={false}
       >
+        <ComponentAddTabs onTabChange={this.callbackTabChange} />
         <Modal.Header>
           <Modal.Title>
-            Add
+            <div className="header">
+              Add {this.state.currentTab}
+            </div>
             <div>
               {this.onClosePrompt}
               <button onClick={this.onModalClose} className="close" />
@@ -270,6 +310,7 @@ class ComponentAdd extends React.Component {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {' '}
           <b>ID</b>
           <InputGroup size="sm" className="mb-3">
             <FormControl onChange={this.handleIdChange} aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
@@ -303,6 +344,11 @@ class ComponentAdd extends React.Component {
           <b>Location</b>
           <InputGroup size="sm" className="mb-3">
             <FormControl onChange={this.handleLocationChange} aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
+          </InputGroup>
+
+          <b>Comment</b>
+          <InputGroup size="lg" className="mb-3">
+            <FormControl as="textarea" onChange={this.handleCommentChange} aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
           </InputGroup>
 
           <b>Category</b>
