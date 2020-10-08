@@ -47,32 +47,37 @@ class ComponentAdd extends React.Component {
     this.onHideFunc = null;
     this.formChanged = false;
     this.partNumSet = false;
+    this.nextPartNumbers = [];
+    this.nextPartNumbersFetched = false;
   }
 
   componentDidMount() {
     // const { currentTab } = this.state;
-    // this.getPartnumber(currentTab);
+    this.getPartnumber();
+    console.log('ComponentAdd mounted!');
   }
 
-  setPartNumber = () => {
-    if (!this.partNumSet) {
-      this.partNumSet = true;
-      const { currentTab } = this.state;
-      this.getPartnumber(currentTab);
+  setPartNumber = (currentTab) => {
+    const { formValues } = this.state;
+    for (let i = 0; i < this.nextPartNumbers.length; i += 1) {
+      if (this.nextPartNumbers[i].type === currentTab) {
+        formValues.idValue = this.nextPartNumbers[i].partNum;
+      }
     }
+    this.setState({ formValues });
   }
 
-  getPartnumber = (currentTab) => {
-    axios.get(`/api/getPartnumber/${currentTab}`)
+  getPartnumber = () => {
+    axios.get('/api/getPartnumbers/')
       // handle success
       .then((response) => {
-        const { formValues } = this.state;
-        formValues.idValue = response.data.partNum;
+        this.nextPartNumbers = response.data.partNums;
+        this.setPartNumber(this.state.currentTab);
 
-        this.setState({ formValues });
         console.log('Partnum data:');
         console.log(response.data);
-        return response.data.data;
+
+        return response.data;
       })
 
       // handle error
@@ -111,8 +116,8 @@ class ComponentAdd extends React.Component {
   callbackTabChange = (tab) => {
     console.log(`Tab changed to: ${tab}`);
 
-    this.getPartnumber(tab);
     this.setState({ currentTab: tab });
+    this.setPartNumber(tab);
   }
 
   add = (componentData) => {
@@ -419,7 +424,6 @@ class ComponentAdd extends React.Component {
     this.onHideFunc = onHide;
     this.generateOnClosePrompt();
     this.generateAddPrompt();
-    this.setPartNumber();
 
     return (
       <Modal

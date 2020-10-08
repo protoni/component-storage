@@ -9,7 +9,7 @@ class ComponentTable extends React.Component {
     super(props);
     this.handleChange = this.handleChange.bind(this);
     this.columnNames = [
-      'ID',
+      'Part number',
       'Name',
       'Description',
       'Manufacturer',
