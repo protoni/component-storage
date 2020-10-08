@@ -36,6 +36,7 @@ class ComponentAdd extends React.Component {
       },
       addButtonClicked: false,
       showOnClosePrompt: false,
+      showAddPrompt: false,
       currentTab: this.defaultTab,
     };
     this.show = true;
@@ -45,6 +46,39 @@ class ComponentAdd extends React.Component {
     this.thumbnailFile = '';
     this.onHideFunc = null;
     this.formChanged = false;
+    this.partNumSet = false;
+  }
+
+  componentDidMount() {
+    // const { currentTab } = this.state;
+    // this.getPartnumber(currentTab);
+  }
+
+  setPartNumber = () => {
+    if (!this.partNumSet) {
+      this.partNumSet = true;
+      const { currentTab } = this.state;
+      this.getPartnumber(currentTab);
+    }
+  }
+
+  getPartnumber = (currentTab) => {
+    axios.get(`/api/getPartnumber/${currentTab}`)
+      // handle success
+      .then((response) => {
+        const { formValues } = this.state;
+        formValues.idValue = response.data.partNum;
+
+        this.setState({ formValues });
+        console.log('Partnum data:');
+        console.log(response.data);
+        return response.data.data;
+      })
+
+      // handle error
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   // Callback function
@@ -76,6 +110,8 @@ class ComponentAdd extends React.Component {
   // Callback function
   callbackTabChange = (tab) => {
     console.log(`Tab changed to: ${tab}`);
+
+    this.getPartnumber(tab);
     this.setState({ currentTab: tab });
   }
 
@@ -166,7 +202,7 @@ class ComponentAdd extends React.Component {
     console.log('Waiting for files to upload timed out!');
   }
 
-  addComponentData = async (data) => {
+  sendComponentData = async (data) => {
     await this.waitFileUpload();
     console.log(`this.filesDropped: ${this.filesDropped}, this.files.length: ${this.files.length}`);
     data.files = this.files;
@@ -174,6 +210,10 @@ class ComponentAdd extends React.Component {
   }
 
   onAddButtonClick = () => {
+    this.setState({ showAddPrompt: true });
+  }
+
+  addComponentData = () => {
     const { formValues, currentTab } = this.state;
     const {
       idValue,
@@ -219,7 +259,7 @@ class ComponentAdd extends React.Component {
 
     console.log(componentData);
 
-    this.addComponentData(componentData);
+    this.sendComponentData(componentData);
 
     this.isLoading = true;
 
@@ -229,10 +269,16 @@ class ComponentAdd extends React.Component {
   sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   canClose = () => {
-    const items = Object.values(this.state.formValues);
+    const { formValues } = this.state;
+
+    // Exclude part number check because it is retreived automatically from the backend
+    delete formValues.idValue;
+
+    const items = Object.values(formValues);
     // const values = Object.values(fruits)
 
     for (let i = 0; i < items.length; i += 1) {
+      console.log(items[i]);
       if (items[i] !== '') {
         return false;
       }
@@ -247,8 +293,15 @@ class ComponentAdd extends React.Component {
 
   closeModal = () => {
     console.log('closing..');
-    this.setState({ showModal: false, showOnClosePrompt: false });
+    this.setState({
+      showModal: false,
+      showOnClosePrompt: false,
+      showAddPrompt: false,
+      currentTab: this.defaultTab,
+    });
+
     this.onHideFunc();
+    this.partNumSet = false;
   }
 
   onModalClose = () => {
@@ -260,13 +313,23 @@ class ComponentAdd extends React.Component {
     }
   }
 
-  promptYesBtn = (evt) => {
+  promptCloseYesBtn = (evt) => {
     this.cleanup();
     this.closeModal();
   }
 
-  promptNoBtn = (evt) => {
+  promptCloseNoBtn = (evt) => {
     this.setState({ showOnClosePrompt: false });
+  }
+
+  promptAddYesBtn = () => {
+    this.addComponentData();
+    this.cleanup();
+    this.closeModal();
+  }
+
+  promptAddNoBtn = () => {
+    this.setState({ showAddPrompt: false });
   }
 
   generateOnClosePrompt = () => {
@@ -285,15 +348,34 @@ class ComponentAdd extends React.Component {
           <div>
             {'Discard changes and close?'}
             {' '}
-            <Button onClick={this.promptYesBtn} size="sm" variant="outline-danger">Yes</Button>
+            <Button onClick={this.promptCloseYesBtn} size="sm" variant="outline-danger">Yes</Button>
             {' '}
-            <Button onClick={this.promptNoBtn} size="sm" variant="outline-dark">No</Button>
+            <Button onClick={this.promptCloseNoBtn} size="sm" variant="outline-dark">No</Button>
             {' '}
           </div>
         </div>
       );
     } else {
       this.onClosePrompt = <div />;
+    }
+  }
+
+  generateAddPrompt = () => {
+    if (this.state.showAddPrompt) {
+      this.addPrompt = (
+        <div style={{ margin: 'auto' }}>
+          <div>
+            <b>{'Are you sure?'}</b>
+            {' '}
+            <Button onClick={this.promptAddYesBtn} size="sm" variant="outline-danger">Yes</Button>
+            {' '}
+            <Button onClick={this.promptAddNoBtn} size="sm" variant="outline-dark">No</Button>
+            {' '}
+          </div>
+        </div>
+      );
+    } else {
+      this.addPrompt = <div />;
     }
   }
 
@@ -336,6 +418,8 @@ class ComponentAdd extends React.Component {
     const { show, onHide } = this.props;
     this.onHideFunc = onHide;
     this.generateOnClosePrompt();
+    this.generateAddPrompt();
+    this.setPartNumber();
 
     return (
       <Modal
@@ -363,9 +447,9 @@ class ComponentAdd extends React.Component {
         </Modal.Header>
         <Modal.Body>
           {' '}
-          <b>ID</b>
+          <b>Part number</b>
           <InputGroup size="sm" className="mb-3">
-            <FormControl onChange={this.handleIdChange} aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
+            <FormControl onChange={this.handleIdChange} value={this.state.formValues.idValue} disabled aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
           </InputGroup>
 
           <b>Name</b>
@@ -420,11 +504,16 @@ class ComponentAdd extends React.Component {
             <FormControl as="textarea" onChange={this.handleCommentChange} aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
           </InputGroup>
 
-          <div style={{ marginTop: 10, marginBottom: 10 }}>
+          <div>
+          <div style={{ marginTop: 10, marginBottom: 10, display: 'flex' }}>
             <Button variant="primary" onClick={this.onAddButtonClick}>
               Add
             </Button>
+            {this.addPrompt}
           </div>
+          </div>
+          
+
           <FileUpload
             partNum={this.state.idValue}
             addButtonClicked={this.state.addButtonClicked}
