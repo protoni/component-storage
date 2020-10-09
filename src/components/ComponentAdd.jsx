@@ -46,9 +46,9 @@ class ComponentAdd extends React.Component {
     this.thumbnailFile = '';
     this.onHideFunc = null;
     this.formChanged = false;
-    this.partNumSet = false;
     this.nextPartNumbers = [];
     this.nextPartNumbersFetched = false;
+    this.partNumLoaded = false;
   }
 
   componentDidMount() {
@@ -84,6 +84,13 @@ class ComponentAdd extends React.Component {
       .catch((error) => {
         console.log(error);
       });
+  }
+
+  loadPartNum = () => {
+    if (!this.partNumLoaded) {
+      this.partNumLoaded = true;
+      this.setPartNumber(this.defaultTab);
+    }
   }
 
   // Callback function
@@ -306,7 +313,7 @@ class ComponentAdd extends React.Component {
     });
 
     this.onHideFunc();
-    this.partNumSet = false;
+    this.partNumLoaded = false;
   }
 
   onModalClose = () => {
@@ -424,6 +431,7 @@ class ComponentAdd extends React.Component {
     this.onHideFunc = onHide;
     this.generateOnClosePrompt();
     this.generateAddPrompt();
+    this.loadPartNum();
 
     return (
       <Modal
@@ -516,7 +524,6 @@ class ComponentAdd extends React.Component {
             {this.addPrompt}
           </div>
           </div>
-          
 
           <FileUpload
             partNum={this.state.idValue}
