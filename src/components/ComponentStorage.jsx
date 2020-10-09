@@ -51,7 +51,7 @@ class ComponentStorage extends React.Component {
           this.addError('Failed to get data from the backend!');
           return;
         }
-        const currentData = this.state.componentData;
+        const currentData = [];
         for (let i = 0; i < data.length; i += 1) {
           currentData.push(data[i]);
         }
@@ -67,9 +67,16 @@ class ComponentStorage extends React.Component {
     this.getAllData();
   }
 
+  // Callback function. Called when the 'Add component' modal closes.
   callbackModal = () => {
     console.log("CS closing")
     this.setState({ showModal: false });
+  }
+
+  // Callback function. Called when a new component was added.
+  callbackAdd = () => {
+    console.log("CS added");
+    this.getAllData();
   }
 
   onModalButtonClick = () => {
@@ -92,6 +99,7 @@ class ComponentStorage extends React.Component {
           <ComponentAdd
             show={this.state.showModal}
             onHide={this.callbackModal}
+            onAdd={this.callbackAdd}
           />
         </div>
         <ComponentTable data={this.state.componentData} columnNames={this.columnNames} />

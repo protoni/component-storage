@@ -14,8 +14,11 @@ import FileUpload from './FileUpload.jsx';
 import ComponentAddTabs from './ComponentAddTabs.jsx';
 import './css/ComponentAdd.css';
 
-// ( seconds )
+// Timeout for saving file data to database ( seconds )
 const FILE_UPLOAD_TIMEOUT = 60;
+
+// Timeout for saving component data to database ( seconds )
+const DATA_UPLOAD_TIMEOUT = 60;
 
 class ComponentAdd extends React.Component {
   constructor(props) {
@@ -45,15 +48,18 @@ class ComponentAdd extends React.Component {
     this.filesDropped = 0;
     this.thumbnailFile = '';
     this.onHideFunc = null;
+    this.onAddFunc = null;
     this.formChanged = false;
     this.nextPartNumbers = [];
     this.nextPartNumbersFetched = false;
     this.partNumLoaded = false;
+
+    // Component data succesfully added to database
+    this.dataAdded = false;
   }
 
   componentDidMount() {
-    // const { currentTab } = this.state;
-    this.getPartnumber();
+    this.getPartnumbers();
     console.log('ComponentAdd mounted!');
   }
 
@@ -67,7 +73,7 @@ class ComponentAdd extends React.Component {
     this.setState({ formValues });
   }
 
-  getPartnumber = () => {
+  getPartnumbers = () => {
     axios.get('/api/getPartnumbers/')
       // handle success
       .then((response) => {
@@ -87,8 +93,11 @@ class ComponentAdd extends React.Component {
   }
 
   loadPartNum = () => {
+    console.log("this.partNumLoaded: " + this.partNumLoaded)
     if (!this.partNumLoaded) {
       this.partNumLoaded = true;
+      console.log("-------------")
+      this.getPartnumbers();
       this.setPartNumber(this.defaultTab);
     }
   }
@@ -134,6 +143,7 @@ class ComponentAdd extends React.Component {
     })
       .then((response) => {
         console.log(`response:  ${response}`);
+        this.dataAdded = true;
       })
       .catch((error) => {
         console.log(`error: ${error}`);
@@ -212,6 +222,19 @@ class ComponentAdd extends React.Component {
     }
 
     console.log('Waiting for files to upload timed out!');
+  }
+
+  waitDataUpload = async () => {
+    for (let i = 0; i < DATA_UPLOAD_TIMEOUT; i += 1) {
+      if (this.dataAdded) {
+        return;
+      }
+
+      /* eslint-disable no-await-in-loop */
+      await this.sleep(1000);
+    }
+
+    console.log('Waiting for data to upload timed out!');
   }
 
   sendComponentData = async (data) => {
@@ -314,6 +337,7 @@ class ComponentAdd extends React.Component {
 
     this.onHideFunc();
     this.partNumLoaded = false;
+    this.dataAdded = false;
   }
 
   onModalClose = () => {
@@ -323,6 +347,8 @@ class ComponentAdd extends React.Component {
       console.log('Unsaved changes!');
       this.setState({ showOnClosePrompt: true });
     }
+    this.partNumLoaded = false;
+    this.dataAdded = false;
   }
 
   promptCloseYesBtn = (evt) => {
@@ -334,10 +360,21 @@ class ComponentAdd extends React.Component {
     this.setState({ showOnClosePrompt: false });
   }
 
-  promptAddYesBtn = () => {
+  // Called when the 'add component' confirm button has been pressed
+  promptAddYesBtn = async () => {
     this.addComponentData();
     this.cleanup();
     this.closeModal();
+
+    console.log('Waiting for the data to upload to database..');
+    await this.waitDataUpload();
+    console.log('Data uploaded to the database!');
+
+    // Get next part numbers
+    this.getPartnumbers();
+
+    // Call parent to fetch new data
+    this.onAddFunc();
   }
 
   promptAddNoBtn = () => {
@@ -427,8 +464,9 @@ class ComponentAdd extends React.Component {
   }
 
   render() {
-    const { show, onHide } = this.props;
+    const { show, onHide, onAdd } = this.props;
     this.onHideFunc = onHide;
+    this.onAddFunc = onAdd;
     this.generateOnClosePrompt();
     this.generateAddPrompt();
     this.loadPartNum();
@@ -543,11 +581,13 @@ class ComponentAdd extends React.Component {
 ComponentAdd.defaultProps = {
   show: PropTypes.bool,
   onHide: PropTypes.func,
+  onAdd: PropTypes.func,
 };
 
 ComponentAdd.propTypes = {
   show: PropTypes.bool,
   onHide: PropTypes.func,
+  onAdd: PropTypes.func,
 };
 
 export default ComponentAdd;
