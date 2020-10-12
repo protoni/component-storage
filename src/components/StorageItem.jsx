@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Button } from 'react-bootstrap';
 import downloadjs from 'downloadjs';
 import { NavLink } from 'react-router-dom';
+import ComponentEdit from './ComponentEdit.jsx';
 
 import miscFile from '../assets/icons/miscFile.png';
 import pdfFile from '../assets/icons/pdfFile.png';
@@ -21,6 +22,7 @@ class StorageItem extends React.Component {
       id: 0,
       componentData: [],
       files: [],
+      showModal: false,
     };
     this.filesFetched = false;
     this.filePath = '';
@@ -40,6 +42,18 @@ class StorageItem extends React.Component {
     this.loadComponentData(id);
     this.getFileHeaders(id);
     console.log(`filesFetched: ${this.filesNotFetched}`);
+  }
+
+  // Callback function. Called when the 'Add component' modal closes.
+  callbackModal = () => {
+    console.log("CS closing")
+    this.setState({ showModal: false });
+  }
+
+  // Callback function. Called when a new component was added.
+  callbackAdd = () => {
+    console.log("CS added");
+    
   }
 
   getFileHeaders = (id) => {
@@ -265,7 +279,8 @@ class StorageItem extends React.Component {
   */
 
  onEditClick = (evt) => {
-  console.log("edit btn clicked!");
+   console.log('edit btn clicked!');
+   this.setState({ showModal: true });
  }
 
  render() {
@@ -276,7 +291,7 @@ class StorageItem extends React.Component {
 
    return (
      <div>
-       <button data-testid="editBtn" className="editButton" onMouseDown={() => this.onEditClick()}>
+       <button type="button" data-testid="editBtn" className="editButton" onMouseDown={() => this.onEditClick()}>
          <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-edit" width="44" height="44" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#2196F3" fill="none" strokeLinecap="round" strokeLinejoin="round">
            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
            <path d="M9 7h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3" />
@@ -301,6 +316,12 @@ class StorageItem extends React.Component {
        <div style={{ margin: '10px' }}>
          {this.fileView}
        </div>
+       <ComponentEdit
+         show={this.state.showModal}
+         onHide={this.callbackModal}
+         onAdd={this.callbackAdd}
+         data={this.state.componentData}
+       />
      </div>
    );
  }
