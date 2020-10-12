@@ -59,7 +59,7 @@ class ComponentAdd extends React.Component {
   }
 
   componentDidMount() {
-    this.getPartnumbers();
+    // this.getPartnumbers();
     console.log('ComponentAdd mounted!');
   }
 

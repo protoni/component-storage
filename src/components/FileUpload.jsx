@@ -72,27 +72,6 @@ class FileUpload extends React.Component {
         console.log(`error: ${error}`);
       });
   }
-  /*
-  onDrop = (files) => {
-    // POST to a test endpoint for demo purposes
-    console.log('Files dropped!');
-
-    const req = request.post('/api/saveFiles');
-
-    files.forEach((file) => {
-      this.files.push(file);
-
-      console.log(`Name: ${file.name}`);
-      console.log(file);
-      console.log(file.data);
-      req.attach(file.name, file);
-    });
-
-    // this.saveFiles(files);
-
-    // req.end();
-  }
-  */
 
   upload = (files) => {
     const requests = files.map((file) => request
@@ -119,18 +98,6 @@ class FileUpload extends React.Component {
     return false;
   }
 
-  /*
-  addToList = (files) => {
-    console.log("files before:");
-    console.log(files);
-    files.forEach((file) => {
-      file.partNum = this.partNum;
-      this.files.push(file);
-    });
-    console.log("files after:");
-    console.log(this.files);
-  }
-  */
   onPreviewDrop = (previewFiles) => {
     previewFiles.map((file) => {
       if (file.type.includes('image')) {
@@ -157,13 +124,7 @@ class FileUpload extends React.Component {
       files: currentArr,
     });
     this.onFileDropFunc(currentArr.length);
-    // this.files = previewFiles;
 
-    // console.log("previewFiles:");
-    // console.log(previewFiles);
-
-    // this.upload(previewFiles);
-    // this.addToList(previewFiles);
     console.log('files after:');
     console.log(this.state.files);
   }

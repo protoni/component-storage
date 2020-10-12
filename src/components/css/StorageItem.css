@@ -1,0 +1,51 @@
+
+.editButtonWrapper {
+    border-radius: 25px;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    justify-content: center;
+    
+}
+
+.editButton {
+    float: right;
+    width: '100%';
+    align-items: right;
+    justify-content: right;
+    border: none;
+    outline:none;
+    background-color: Transparent;
+}
+
+.editButton:focus {
+    outline: none; 
+    border: none;
+  }
+
+.editButton svg {
+  width: 50px;
+  height: 30px;
+  
+}
+
+.editButton svg:hover {
+    stroke: #2c3e50;
+    
+  }
+
+.partNumHeader {
+    justify-content: center;
+    position: absolute;
+    top: 45px;
+}
+
+.itemImage {
+    
+}
+
+.storageImageSpacer {
+    padding-top: 13px;
+    
+}

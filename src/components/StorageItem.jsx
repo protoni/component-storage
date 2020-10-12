@@ -3,6 +3,7 @@ import React from 'react';
 import axios from 'axios';
 import { Button } from 'react-bootstrap';
 import downloadjs from 'downloadjs';
+import { NavLink } from 'react-router-dom';
 
 import miscFile from '../assets/icons/miscFile.png';
 import pdfFile from '../assets/icons/pdfFile.png';
@@ -10,6 +11,8 @@ import txtFile from '../assets/icons/txtFile.png';
 import csvFile from '../assets/icons/csvFile.png';
 import zipFile from '../assets/icons/zipFile.png';
 import noImage from '../assets/images/noImage.png';
+
+import './css/StorageItem.css';
 
 class StorageItem extends React.Component {
   constructor(props) {
@@ -148,7 +151,7 @@ class StorageItem extends React.Component {
     }
 
     return (
-      <div style={{ 'margin-bottom': '10px'}}>
+      <div style={{ 'margin-bottom': '10px' }}>
         <img src={filePath} style={previewStyle} id={file} onClick={this.fileClicked} />
         <b style={{ 'margin-left': '10px' }}>{file}</b>
       </div>
@@ -173,7 +176,7 @@ class StorageItem extends React.Component {
               const path = `${this.server + this.state.id}/${file}`;
 
               return (
-                <div  style={{ 'margin-bottom': '10px' }}>
+                <div style={{ 'margin-bottom': '10px' }}>
                   <img src={path} style={previewStyle} id={file} onClick={this.fileClicked} />
                   <b style={{ 'margin-left': '10px' }}>{file}</b>
                 </div>
@@ -238,11 +241,11 @@ class StorageItem extends React.Component {
 
     if (this.state.componentData.length > 0 && this.state.componentData[0].thumbnail !== '') {
       this.imageView = (
-        <img style={imageStyle} src={`${this.server + this.state.id}/${this.state.componentData[0].thumbnail}`}/>
+        <img style={imageStyle} src={`${this.server + this.state.id}/${this.state.componentData[0].thumbnail}`} />
       );
     } else {
       this.imageView = (
-        <img style={imageStyle} src={noImage}/>
+        <img style={imageStyle} src={noImage} />
       );
     }
   }
@@ -261,30 +264,46 @@ class StorageItem extends React.Component {
   }
   */
 
-  render() {
-    this.generateView();
-    this.generateFileView();
-    this.generateImageView();
-    // this.generateTable();
+ onEditClick = (evt) => {
+  console.log("edit btn clicked!");
+ }
 
-    return (
-      <div>
-        <h2 style={{'text-align':'center'}}>
-          {this.state.id}
-        </h2>
-        <p>{' '}</p>
-        <div style={{'text-align':'center'}}>
-          {this.imageView}
-        </div>
-        <p>{' '}</p>
-        {this.table}
-        <b>Files:</b>
-        <div style={{ margin: '10px' }}>
-          {this.fileView}
-        </div>
-      </div>
-    );
-  }
+ render() {
+   this.generateView();
+   this.generateFileView();
+   this.generateImageView();
+   // this.generateTable();
+
+   return (
+     <div>
+       <button data-testid="editBtn" className="editButton" onMouseDown={() => this.onEditClick()}>
+         <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-edit" width="44" height="44" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#2196F3" fill="none" strokeLinecap="round" strokeLinejoin="round">
+           <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+           <path d="M9 7h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3" />
+           <path d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3" />
+           <line x1="16" y1="5" x2="19" y2="8" />
+         </svg>
+       </button>
+
+       <div className="editButtonWrapper">
+         <h2 className="partNumHeader" style={{ 'text-align': 'center' }}>
+           {this.state.id}
+         </h2>
+
+       </div>
+       <p className="storageImageSpacer">{' '}</p>
+       <div className="itemImage" style={{ 'text-align': 'center' }}>
+         {this.imageView}
+       </div>
+       <p>{' '}</p>
+       {this.table}
+       <b>Files:</b>
+       <div style={{ margin: '10px' }}>
+         {this.fileView}
+       </div>
+     </div>
+   );
+ }
 }
 
 export default StorageItem;
