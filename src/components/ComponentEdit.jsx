@@ -10,6 +10,7 @@ import {
 } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import cloneDeep from 'lodash/cloneDeep';
 import FileUpload from './FileUpload.jsx';
 import ComponentAddTabs from './ComponentAddTabs.jsx';
 import './css/ComponentAdd.css';
@@ -19,6 +20,9 @@ const FILE_UPLOAD_TIMEOUT = 60;
 
 // Timeout for saving component data to database ( seconds )
 const DATA_UPLOAD_TIMEOUT = 60;
+
+// Timeout for loading component data from database ( seconds )
+const DATA_DOWNLOAD_TIMEOUT = 60;
 
 class ComponentAdd extends React.Component {
   constructor(props) {
@@ -57,6 +61,12 @@ class ComponentAdd extends React.Component {
     // Current item data
     this.data = [];
 
+    // Saved original data before editing
+    this.originalData = {};
+
+    // Has the original data saved already
+    this.originalDataSaved = false;
+
     // Component data succesfully added to database
     this.dataAdded = false;
   }
@@ -68,8 +78,8 @@ class ComponentAdd extends React.Component {
   }
 
   loadData = async () => {
-    for (let i = 0; i < 10; i += 1) {
-        console.log("Loading ComponentEdit data!");
+    for (let i = 0; i < DATA_DOWNLOAD_TIMEOUT; i += 1) {
+      console.log('Loading ComponentEdit data!');
       if (this.data.length > 0) {
         const obj = {
           idValue: this.data[0].productId,
@@ -85,6 +95,14 @@ class ComponentAdd extends React.Component {
 
         this.setState({ formValues: obj });
 
+        // Save original data
+        if (!this.originalDataSaved) {
+          this.originalDataSaved = true;
+
+          // Create a copy object and save
+          const obj2 = cloneDeep(obj);
+          this.originalData = obj2;
+        }
         return;
       }
 
@@ -93,45 +111,6 @@ class ComponentAdd extends React.Component {
     }
 
     console.log('Timeout loading ComponentEdit data!');
-  }
-
-  setPartNumber = (currentTab) => {
-    const { formValues } = this.state;
-    for (let i = 0; i < this.nextPartNumbers.length; i += 1) {
-      if (this.nextPartNumbers[i].type === currentTab) {
-        formValues.idValue = this.nextPartNumbers[i].partNum;
-      }
-    }
-    this.setState({ formValues });
-  }
-
-  getPartnumbers = () => {
-    axios.get('/api/getPartnumbers/')
-      // handle success
-      .then((response) => {
-        this.nextPartNumbers = response.data.partNums;
-        this.setPartNumber(this.state.currentTab);
-
-        console.log('Partnum data:');
-        console.log(response.data);
-
-        return response.data;
-      })
-
-      // handle error
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
-  loadPartNum = () => {
-    console.log(`this.partNumLoaded: ${this.partNumLoaded}`);
-    if (!this.partNumLoaded) {
-      this.partNumLoaded = true;
-      console.log('-------------');
-      this.getPartnumbers();
-      this.setPartNumber(this.defaultTab);
-    }
   }
 
   // Callback function
@@ -163,14 +142,14 @@ class ComponentAdd extends React.Component {
   // Callback function
   callbackTabChange = (tab) => {
     console.log(`Tab changed to: ${tab}`);
-
+    console.log("obj:");
+    console.log(this.state.formValues)
     this.setState({ currentTab: tab });
-    this.setPartNumber(tab);
   }
 
-  add = (componentData) => {
+  edit = (componentData) => {
     console.log('Adding!');
-    axios.post('/api/addComponent', {
+    axios.post('/api/editComponent', {
       data: componentData,
     })
       .then((response) => {
@@ -273,7 +252,7 @@ class ComponentAdd extends React.Component {
     await this.waitFileUpload();
     console.log(`this.filesDropped: ${this.filesDropped}, this.files.length: ${this.files.length}`);
     data.files = this.files;
-    this.add(data);
+    this.edit(data);
   }
 
   onAddButtonClick = () => {
@@ -338,15 +317,15 @@ class ComponentAdd extends React.Component {
   canClose = () => {
     const { formValues } = this.state;
 
-    // Exclude part number check because it is retreived automatically from the backend
-    delete formValues.idValue;
-
     const items = Object.values(formValues);
-    // const values = Object.values(fruits)
+    const origItems = Object.values(this.originalData);
+
+    if (items.length !== origItems.length) {
+      return false;
+    }
 
     for (let i = 0; i < items.length; i += 1) {
-      console.log(items[i]);
-      if (items[i] !== '') {
+      if (items[i] !== origItems[i]) {
         return false;
       }
     }
@@ -402,9 +381,6 @@ class ComponentAdd extends React.Component {
     await this.waitDataUpload();
     console.log('Data uploaded to the database!');
 
-    // Get next part numbers
-    this.getPartnumbers();
-
     // Call parent to fetch new data
     this.onAddFunc();
   }
@@ -418,7 +394,7 @@ class ComponentAdd extends React.Component {
     if (this.state.showOnClosePrompt) {
       this.onClosePrompt = (
         <div style={{
-          position: 'absolute', right: '40px', top: '50px', fontSize: '0.5em',
+          position: 'absolute', right: '40px', top: '10px', fontSize: '0.5em',
         }}
         >
           <div>
@@ -476,20 +452,17 @@ class ComponentAdd extends React.Component {
     this.setState({ formValues: newFormValues });
   }
 
-  cleanFilesArray = () => {
-    this.filesDropped = 0;
-    this.thumbnailFile = '';
+  revertChanges = () => {
+    const obj = cloneDeep(this.originalData);
+    this.setState({ formValues: obj });
   }
 
   cleanup = () => {
     // Set currentTab to component
     this.setState({ currentTab: this.defaultTab });
 
-    // Clean state.formValues
-    this.cleanFormValues();
-
-    // Remove files from the files array
-    this.cleanFilesArray();
+    // Un-do changes
+    this.revertChanges();
 
     // Set modal close states
     this.closeModal();
@@ -500,7 +473,7 @@ class ComponentAdd extends React.Component {
       <div>
         <b>Part number</b>
         <InputGroup size="sm" className="mb-3">
-          <FormControl onChange={this.handleIdChange} value={this.state.formValues.idValue} aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
+          <FormControl onChange={this.handleIdChange} value={this.state.formValues.idValue} disabled aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
         </InputGroup>
 
         <b>Name</b>
@@ -583,7 +556,6 @@ class ComponentAdd extends React.Component {
         backdrop="static"
         keyboard={false}
       >
-        <ComponentAddTabs onTabChange={this.callbackTabChange} />
         <Modal.Header>
           <Modal.Title>
             <div className="header">
@@ -604,7 +576,7 @@ class ComponentAdd extends React.Component {
           <div>
             <div style={{ marginTop: 10, marginBottom: 10, display: 'flex' }}>
               <Button variant="primary" onClick={this.onAddButtonClick}>
-                Add
+                Save
               </Button>
               {this.addPrompt}
             </div>
