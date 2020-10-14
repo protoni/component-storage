@@ -120,6 +120,7 @@ class ComponentAdd extends React.Component {
   onFileRemove = (newFiles) => {
     this.filesDropped = newFiles.length;
     this.filesToStore = newFiles;
+    console.log('Decresed fukesUploaded counter by: ' + newFiles.length)
   }
 
   // Callback function
@@ -363,7 +364,6 @@ class ComponentAdd extends React.Component {
   // Called when the 'add component' confirm button has been pressed
   promptAddYesBtn = async () => {
     this.addComponentData();
-    this.cleanup();
     this.closeModal();
 
     console.log('Waiting for the data to upload to database..');
@@ -375,6 +375,9 @@ class ComponentAdd extends React.Component {
 
     // Call parent to fetch new data
     this.onAddFunc();
+
+    // Cleanup
+    this.cleanup();
   }
 
   promptAddNoBtn = () => {
@@ -447,6 +450,7 @@ class ComponentAdd extends React.Component {
   cleanFilesArray = () => {
     this.filesDropped = 0;
     this.thumbnailFile = '';
+    console.log('Cleaned files array!');
   }
 
   cleanup = () => {

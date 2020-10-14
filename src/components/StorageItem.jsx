@@ -21,7 +21,16 @@ class StorageItem extends React.Component {
     this.state = {
       id: 0,
       componentData: [],
+
+      // Contains a list of filenames the item has stored.
       files: [],
+
+      // List of objects containing:
+      // - Full path of the files on the backend.
+      // - Filename
+      // - Will contain the filesize in the future. ( not implemented yet )
+      fileInfo: [],
+
       showModal: false,
     };
     this.filesFetched = false;
@@ -46,14 +55,39 @@ class StorageItem extends React.Component {
 
   // Callback function. Called when the 'Add component' modal closes.
   callbackModal = () => {
-    console.log("CS closing")
+    console.log('CS closing');
     this.setState({ showModal: false });
   }
 
   // Callback function. Called when a new component was added.
   callbackAdd = () => {
-    console.log("CS added");
-    
+    console.log('CS added');
+  }
+
+  createFileInfoObject = (files) => {
+    const { id } = this.state;
+    const fileInfoArr = [];
+    console.log('File info object:');
+    console.log(files);
+    for (let i = 0; i < files.length; i += 1) {
+      if (this.imageTypes.includes(files[i].split('.').pop().toLowerCase())) {
+        const obj = {
+          filename: files[i],
+          fullPath: `${this.server + id}/${files[i]}`,
+        };
+        fileInfoArr.push(obj);
+      } else {
+        const obj = {
+          filename: files[i],
+          fullPath: this.getFileTypePath(files[i]),
+        };
+        fileInfoArr.push(obj);
+      }
+    }
+
+    this.setState({ fileInfo: fileInfoArr });
+    console.log('File info array:');
+    console.log(this.state.fileInfo);
   }
 
   getFileHeaders = (id) => {
@@ -65,6 +99,7 @@ class StorageItem extends React.Component {
           console.log(response.data.files);
           this.filesFetched = true;
           this.setState({ files: response.data.files });
+          this.createFileInfoObject(response.data.files);
           return response;
         })
 
@@ -135,16 +170,8 @@ class StorageItem extends React.Component {
     this.handleDownload(e.target.id);
   }
 
-  getFilePreview = (file) => {
+  getFileTypePath = (file) => {
     let filePath = miscFile;
-    const previewStyle = {
-      display: 'inline',
-      width: 100,
-      height: 100,
-      borderRadius: '5%',
-      border: 'solid',
-      borderWidth: '1px',
-    };
     console.log(file.split('.').pop().toLowerCase());
     if (file.split('.').pop().toLowerCase() === 'zip'
         || file.split('.').pop().toLowerCase() === 'zip'
@@ -163,6 +190,20 @@ class StorageItem extends React.Component {
     } else {
       filePath = miscFile;
     }
+
+    return filePath;
+  }
+
+  getFilePreview = (file) => {
+    const filePath = this.getFileTypePath(file);
+    const previewStyle = {
+      display: 'inline',
+      width: 100,
+      height: 100,
+      borderRadius: '5%',
+      border: 'solid',
+      borderWidth: '1px',
+    };
 
     return (
       <div style={{ 'margin-bottom': '10px' }}>
@@ -284,6 +325,13 @@ class StorageItem extends React.Component {
  }
 
  render() {
+   const {
+     id,
+     fileInfo,
+     showModal,
+     componentData,
+   } = this.state;
+
    this.generateView();
    this.generateFileView();
    this.generateImageView();
@@ -302,7 +350,7 @@ class StorageItem extends React.Component {
 
        <div className="editButtonWrapper">
          <h2 className="partNumHeader" style={{ 'text-align': 'center' }}>
-           {this.state.id}
+           {id}
          </h2>
 
        </div>
@@ -317,10 +365,11 @@ class StorageItem extends React.Component {
          {this.fileView}
        </div>
        <ComponentEdit
-         show={this.state.showModal}
+         files={fileInfo}
+         show={showModal}
          onHide={this.callbackModal}
          onAdd={this.callbackAdd}
-         data={this.state.componentData}
+         data={componentData}
        />
      </div>
    );
