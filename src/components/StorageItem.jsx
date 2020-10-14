@@ -72,14 +72,18 @@ class StorageItem extends React.Component {
     for (let i = 0; i < files.length; i += 1) {
       if (this.imageTypes.includes(files[i].split('.').pop().toLowerCase())) {
         const obj = {
-          filename: files[i],
-          fullPath: `${this.server + id}/${files[i]}`,
+          name: files[i],
+          preview: `${this.server + id}/${files[i]}`,
+          size: 0,
+          type: files[i].split('.').pop().toLowerCase(),
         };
         fileInfoArr.push(obj);
       } else {
         const obj = {
-          filename: files[i],
-          fullPath: this.getFileTypePath(files[i]),
+          name: files[i],
+          preview: this.getFileTypePath(files[i]),
+          size: 0,
+          type: files[i].split('.').pop().toLowerCase(),
         };
         fileInfoArr.push(obj);
       }
@@ -365,11 +369,11 @@ class StorageItem extends React.Component {
          {this.fileView}
        </div>
        <ComponentEdit
-         files={fileInfo}
          show={showModal}
          onHide={this.callbackModal}
          onAdd={this.callbackAdd}
          data={componentData}
+         files={fileInfo}
        />
      </div>
    );

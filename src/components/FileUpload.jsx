@@ -28,6 +28,12 @@ class FileUpload extends React.Component {
     this.onThumbnailSelectFunc = null;
     this.onFileRemoveFunc = null;
     this.thumbnailFile = '';
+    this.imageTypes = [
+      'jpeg',
+      'jpg',
+      'png',
+      'gif',
+    ];
   }
 
   componentDidUpdate() {
@@ -55,7 +61,7 @@ class FileUpload extends React.Component {
       files.push(filesObj);
     }
 
-    console.log("Data obj:");
+    console.log('Data obj:');
     console.log(files);
     this.onUploadFunc(files);
   }
@@ -74,15 +80,21 @@ class FileUpload extends React.Component {
   }
 
   upload = (files) => {
-    const requests = files.map((file) => request
-      .post('/api/saveFiles')
-      .attach('file', file)
-      .on('progress', (e) => {
-        console.log('Percentage done: ', e.percent);
-      })
-      .end(((response) => {
-        console.log(response);
-      })));
+    const requests = files.map((file) => {
+      if (file instanceof Blob) {
+        request
+          .post('/api/saveFiles')
+          .attach('file', file)
+          .on('progress', (e) => {
+            console.log('Percentage done: ', e.percent);
+          })
+          .end(((response) => {
+            console.log(response);
+          }));
+        return null;
+      }
+      return null;
+    });
 
     Promise.all(requests).then(console.log('done')).catch(console.error);
   }
@@ -143,15 +155,15 @@ class FileUpload extends React.Component {
   }
 
   onFileDeleteClick = (evt) => {
-    console.log("File delete button clicked! File: " + evt.target.value);
+    console.log(`File delete button clicked! File: ${evt.target.value}`);
 
-    let currentFiles = this.state.files;
+    const currentFiles = this.state.files;
     const newFiles = [];
     for (let i = 0; i < currentFiles.length; i += 1) {
       if (currentFiles[i].name !== evt.target.value) {
         newFiles.push(currentFiles[i]);
       } else {
-        console.log("Deleted file: " + currentFiles[i].name);
+        console.log(`Deleted file: ${currentFiles[i].name}`);
       }
     }
 
@@ -159,18 +171,7 @@ class FileUpload extends React.Component {
     this.onFileRemoveFunc(newFiles);
   }
 
-  render() {
-    const {
-      partNum, addButtonClicked, onUpload, onFileDrop, onThumbnailSelect, onFileRemove,
-    } = this.props;
-    this.partNum = partNum;
-    this.addButtonClicked = addButtonClicked;
-    this.onUploadFunc = onUpload;
-    this.onFileDropFunc = onFileDrop;
-    this.onThumbnailSelectFunc = onThumbnailSelect;
-    this.onFileRemoveFunc = onFileRemove;
-
-    console.log(`FileUpload! addButtonClicked: ${addButtonClicked}`);
+  createFilesView = (files) => {
     const previewStyle = {
       display: 'inline',
       width: 100,
@@ -179,6 +180,226 @@ class FileUpload extends React.Component {
       border: 'solid',
       borderWidth: '1px',
     };
+
+    if (files.constructor === Array && files.length > 0) {
+      return (
+        files.map((file) => {
+          console.log(`type: ${file.type}`);
+          /* Create image file view */
+          if (this.imageTypes.includes(file.name.split('.').pop().toLowerCase())) {
+            return (
+              <div className="previewMiscFile">
+                <InputGroup>
+                  <InputGroup.Prepend>
+                    <InputGroup.Radio
+                      onChange={this.onRadioButtonClick}
+                      value={file.name}
+                      name="thumbnailSelect"
+                      aria-label="Thumbnail select"
+                    />
+                  </InputGroup.Prepend>
+                  <div style={{ margin: '30px' }}>
+                    <img
+                      alt="Preview"
+                      key={file.preview}
+                      src={file.preview}
+                      style={previewStyle}
+                    />
+                    <b>
+                      {' '}
+                      {file.name}
+                      {' ( '}
+                      {this.bytesToSize(file.size)}
+                      {' )'}
+                    </b>
+                  </div>
+                  <button onClick={this.onFileDeleteClick} value={file.name} className="close" />
+                </InputGroup>
+              </div>
+            );
+          }
+
+          /* Create .pdf file view */
+          if (file.type.includes('pdf')) {
+            return (
+              <div className="previewMiscFile">
+                <InputGroup>
+                  <InputGroup.Prepend>
+                    <InputGroup.Radio disabled aria-label="Radio button for following text input" />
+                  </InputGroup.Prepend>
+                  <div style={{ margin: '15px' }}>
+                    <img
+                      alt="Preview"
+                      key={file.preview}
+                      src={pdfFile}
+                      style={previewStyle}
+                    />
+                    <b>
+                      {file.name}
+                      {' ( '}
+                      {this.bytesToSize(file.size)}
+                      {' )'}
+                    </b>
+                  </div>
+                  <button onClick={this.onFileDeleteClick} value={file.name} className="close" />
+                </InputGroup>
+              </div>
+            );
+          }
+
+          /* Create .zip file view */
+          if (file.type.includes('zip')) {
+            return (
+              <div className="previewMiscFile">
+                <InputGroup>
+                  <InputGroup.Prepend>
+                    <InputGroup.Radio disabled aria-label="Radio button for following text input" />
+                  </InputGroup.Prepend>
+                  <div style={{ margin: '15px' }}>
+                    <img
+                      alt="Preview"
+                      key={file.preview}
+                      src={zipFile}
+                      style={previewStyle}
+                    />
+                    <b>
+                      {file.name}
+                      {' ( '}
+                      {this.bytesToSize(file.size)}
+                      {' )'}
+                    </b>
+                  </div>
+                  <button onClick={this.onFileDeleteClick} value={file.name} className="close" />
+                </InputGroup>
+              </div>
+            );
+          }
+
+          /* Create .csv file view */
+          if (file.type.includes('excel')) {
+            return (
+              <div className="previewMiscFile">
+                <InputGroup>
+                  <InputGroup.Prepend>
+                    <InputGroup.Radio disabled aria-label="Radio button for following text input" />
+                  </InputGroup.Prepend>
+                  <div style={{ margin: '15px' }}>
+                    <img
+                      alt="Preview"
+                      key={file.preview}
+                      src={csvFile}
+                      style={previewStyle}
+                    />
+                    <b>
+                      {file.name}
+                      {' ( '}
+                      {this.bytesToSize(file.size)}
+                      {' )'}
+                    </b>
+                  </div>
+                  <button onClick={this.onFileDeleteClick} value={file.name} className="close" />
+                </InputGroup>
+              </div>
+            );
+          }
+
+          /* Create .txt file view */
+          if (file.type.includes('text')) {
+            return (
+              <div className="previewMiscFile">
+                <InputGroup>
+                  <InputGroup.Prepend>
+                    <InputGroup.Radio disabled aria-label="Radio button for following text input" />
+                  </InputGroup.Prepend>
+                  <div style={{ margin: '15px' }}>
+                    <img
+                      alt="Preview"
+                      key={file.preview}
+                      src={txtFile}
+                      style={previewStyle}
+                    />
+                    <b>
+                      {file.name}
+                      {' ( '}
+                      {this.bytesToSize(file.size)}
+                      {' )'}
+                    </b>
+                  </div>
+                  <button onClick={this.onFileDeleteClick} value={file.name} className="close" />
+                </InputGroup>
+              </div>
+            );
+          }
+
+          /* Create file view for all the other unknown file types */
+          return (
+            <div className="previewMiscFile">
+              <InputGroup>
+                <InputGroup.Prepend>
+                  <InputGroup.Radio disabled aria-label="Radio button for following text input" />
+                </InputGroup.Prepend>
+                <div style={{ margin: '15px' }}>
+                  <img
+                    alt="Preview"
+                    key={file.preview}
+                    src={miscFile}
+                    style={previewStyle}
+                  />
+                  <b>
+                    {file.name}
+                    {' ( '}
+                    {this.bytesToSize(file.size)}
+                    {' )'}
+                  </b>
+                </div>
+                <button onClick={this.onFileDeleteClick} value={file.name} className="close" />
+              </InputGroup>
+            </div>
+          );
+        })
+      );
+    }
+    return <div />;
+  }
+
+  generateFilesView = (files) => {
+    this.filesView = this.createFilesView(files);
+  }
+
+  generateUploadedFilesView = (files) => {
+    this.uploadedFilesView = this.createFilesView(files);
+  }
+
+  addUploadedFilestoState = (files) => {
+    if (files.constructor === Array && files.length > 0) {
+      console.log('dddddddddddddddddddddddddddddddddddddddd');
+      console.log(`files len: ${files}`);
+      if (!this.uploadedFilesAdded) {
+        this.uploadedFilesAdded = true;
+        this.setState({ files });
+      }
+    }
+  }
+
+  render() {
+    const {
+      partNum,
+      addButtonClicked,
+      onUpload,
+      onFileDrop,
+      onThumbnailSelect,
+      onFileRemove,
+      files,
+    } = this.props;
+    this.partNum = partNum;
+    this.addButtonClicked = addButtonClicked;
+    this.onUploadFunc = onUpload;
+    this.onFileDropFunc = onFileDrop;
+    this.onThumbnailSelectFunc = onThumbnailSelect;
+    this.onFileRemoveFunc = onFileRemove;
+    this.generateFilesView(this.state.files);
+    this.addUploadedFilestoState(files);
+    console.log(`FileUpload! addButtonClicked: ${addButtonClicked}`);
 
     return (
       <div>
@@ -207,180 +428,7 @@ class FileUpload extends React.Component {
         <>
           <h3>Previews</h3>
           <b>( Select thumbnail image with the radio button )</b>
-            {this.state.files.map((file) => {
-              console.log(`type: ${file.type}`);
-              /* Create image file view */
-              if (file.type.includes('image')) {
-                return (
-                  <div className="previewMiscFile">
-                    <InputGroup>
-                      <InputGroup.Prepend>
-                        <InputGroup.Radio
-                          onChange={this.onRadioButtonClick}
-                          value={file.name}
-                          name="thumbnailSelect"
-                          aria-label="Thumbnail select"
-                        />
-                      </InputGroup.Prepend>
-                      <div style={{ margin: '30px' }}>
-                        <img
-                          alt="Preview"
-                          key={file.preview}
-                          src={file.preview}
-                          style={previewStyle}
-                        />
-                        <b>
-                          {' '}
-                          {file.name}
-                          {' ( '}
-                          {this.bytesToSize(file.size)}
-                          {' )'}
-                        </b>
-                      </div>
-                      <button onClick={this.onFileDeleteClick} value={file.name} className="close" />
-                    </InputGroup>
-                  </div>
-                );
-              }
-
-              /* Create .pdf file view */
-              if (file.type.includes('pdf')) {
-                return (
-                  <div className="previewMiscFile">
-                    <InputGroup>
-                      <InputGroup.Prepend>
-                        <InputGroup.Radio disabled aria-label="Radio button for following text input" />
-                      </InputGroup.Prepend>
-                      <div style={{ margin: '15px' }}>
-                        <img
-                          alt="Preview"
-                          key={file.preview}
-                          src={pdfFile}
-                          style={previewStyle}
-                        />
-                        <b>
-                          {file.name}
-                          {' ( '}
-                          {this.bytesToSize(file.size)}
-                          {' )'}
-                        </b>
-                      </div>
-                      <button onClick={this.onFileDeleteClick} value={file.name} className="close" />
-                    </InputGroup>
-                  </div>
-                );
-              }
-
-              /* Create .zip file view */
-              if (file.type.includes('zip')) {
-                return (
-                  <div className="previewMiscFile">
-                    <InputGroup>
-                      <InputGroup.Prepend>
-                        <InputGroup.Radio disabled aria-label="Radio button for following text input" />
-                      </InputGroup.Prepend>
-                      <div style={{ margin: '15px' }}>
-                        <img
-                          alt="Preview"
-                          key={file.preview}
-                          src={zipFile}
-                          style={previewStyle}
-                        />
-                        <b>
-                          {file.name}
-                          {' ( '}
-                          {this.bytesToSize(file.size)}
-                          {' )'}
-                        </b>
-                      </div>
-                      <button onClick={this.onFileDeleteClick} value={file.name} className="close" />
-                    </InputGroup>
-                  </div>
-                );
-              }
-
-              /* Create .csv file view */
-              if (file.type.includes('excel')) {
-                return (
-                  <div className="previewMiscFile">
-                    <InputGroup>
-                      <InputGroup.Prepend>
-                        <InputGroup.Radio disabled aria-label="Radio button for following text input" />
-                      </InputGroup.Prepend>
-                      <div style={{ margin: '15px' }}>
-                        <img
-                          alt="Preview"
-                          key={file.preview}
-                          src={csvFile}
-                          style={previewStyle}
-                        />
-                        <b>
-                          {file.name}
-                          {' ( '}
-                          {this.bytesToSize(file.size)}
-                          {' )'}
-                        </b>
-                      </div>
-                      <button onClick={this.onFileDeleteClick} value={file.name} className="close" />
-                    </InputGroup>
-                  </div>
-                );
-              }
-
-              /* Create .txt file view */
-              if (file.type.includes('text')) {
-                return (
-                  <div className="previewMiscFile">
-                    <InputGroup>
-                      <InputGroup.Prepend>
-                        <InputGroup.Radio disabled aria-label="Radio button for following text input" />
-                      </InputGroup.Prepend>
-                      <div style={{ margin: '15px' }}>
-                        <img
-                          alt="Preview"
-                          key={file.preview}
-                          src={txtFile}
-                          style={previewStyle}
-                        />
-                        <b>
-                          {file.name}
-                          {' ( '}
-                          {this.bytesToSize(file.size)}
-                          {' )'}
-                        </b>
-                      </div>
-                      <button onClick={this.onFileDeleteClick} value={file.name} className="close" />
-                    </InputGroup>
-                  </div>
-                );
-              }
-
-              /* Create file view for all the other unknown file types */
-              return (
-                <div className="previewMiscFile">
-                  <InputGroup>
-                    <InputGroup.Prepend>
-                      <InputGroup.Radio disabled aria-label="Radio button for following text input" />
-                    </InputGroup.Prepend>
-                    <div style={{ margin: '15px' }}>
-                      <img
-                        alt="Preview"
-                        key={file.preview}
-                        src={miscFile}
-                        style={previewStyle}
-                      />
-                      <b>
-                        {file.name}
-                        {' ( '}
-                        {this.bytesToSize(file.size)}
-                        {' )'}
-                      </b>
-                    </div>
-                    <button onClick={this.onFileDeleteClick} value={file.name} className="close" />
-                  </InputGroup>
-                </div>
-              );
-            })}
+            {this.filesView}
         </>
         )}
       </div>
@@ -395,6 +443,7 @@ FileUpload.defaultProps = {
   onFileDrop: PropTypes.func,
   onThumbnailSelect: PropTypes.func,
   onFileRemove: PropTypes.func,
+  files: PropTypes.PropTypes.shape([]),
 };
 
 FileUpload.propTypes = {
@@ -404,6 +453,7 @@ FileUpload.propTypes = {
   onFileDrop: PropTypes.func,
   onThumbnailSelect: PropTypes.func,
   onFileRemove: PropTypes.func,
+  files: PropTypes.PropTypes.shape([]),
 };
 
 export default FileUpload;

@@ -131,6 +131,8 @@ class ComponentAdd extends React.Component {
   onFileRemove = (newFiles) => {
     this.filesDropped = newFiles.length;
     this.filesToStore = newFiles;
+    console.log("File removed! New files:");
+    console.log(newFiles);
   }
 
   // Callback function
@@ -538,6 +540,7 @@ class ComponentAdd extends React.Component {
       onHide,
       onAdd,
       data,
+      files,
     } = this.props;
     this.onHideFunc = onHide;
     this.onAddFunc = onAdd;
@@ -589,6 +592,7 @@ class ComponentAdd extends React.Component {
             onFileDrop={this.onFileDrop}
             onThumbnailSelect={this.onThumbnailSelect}
             onFileRemove={this.onFileRemove}
+            files={files}
           />
 
         </Modal.Body>
@@ -602,6 +606,7 @@ ComponentAdd.defaultProps = {
   onHide: PropTypes.func,
   onAdd: PropTypes.func,
   data: PropTypes.PropTypes.shape([]),
+  files: PropTypes.PropTypes.shape([]),
 };
 
 ComponentAdd.propTypes = {
@@ -609,6 +614,7 @@ ComponentAdd.propTypes = {
   onHide: PropTypes.func,
   onAdd: PropTypes.func,
   data: PropTypes.PropTypes.shape([]),
+  files: PropTypes.PropTypes.shape([]),
 };
 
 export default ComponentAdd;
