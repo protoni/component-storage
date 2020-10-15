@@ -135,7 +135,7 @@ class FileUpload extends React.Component {
     this.setState({
       files: currentArr,
     });
-    this.onFileDropFunc(currentArr.length);
+    this.onFileDropFunc(currentArr);
 
     console.log('files after:');
     console.log(this.state.files);
@@ -159,16 +159,18 @@ class FileUpload extends React.Component {
 
     const currentFiles = this.state.files;
     const newFiles = [];
+    let deletedFile = '';
     for (let i = 0; i < currentFiles.length; i += 1) {
       if (currentFiles[i].name !== evt.target.value) {
         newFiles.push(currentFiles[i]);
       } else {
         console.log(`Deleted file: ${currentFiles[i].name}`);
+        deletedFile = currentFiles[i].name;
       }
     }
 
     this.setState({ files: newFiles });
-    this.onFileRemoveFunc(newFiles);
+    this.onFileRemoveFunc(newFiles, deletedFile);
   }
 
   getImagePreview = (name, preview, style, size, callback) => (

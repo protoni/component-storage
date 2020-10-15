@@ -48,8 +48,20 @@ class ComponentAdd extends React.Component {
     };
     this.show = true;
     this.addButtonClicked = false;
+
+    // Current files array
     this.files = [];
+
+    // Save the original file array given by the parent component
+    this.propsFiles = [];
+
+    // Removed files
+    this.removedFiles = [];
+
+    // How many files has been dropped to the fileupload component
     this.filesDropped = 0;
+
+    // Filename of the current selected thumbnail picture
     this.thumbnailFile = '';
     this.onHideFunc = null;
     this.onAddFunc = null;
@@ -69,6 +81,8 @@ class ComponentAdd extends React.Component {
 
     // Component data succesfully added to database
     this.dataAdded = false;
+
+    this.originalFilesSaved = false;
   }
 
   componentDidMount() {
@@ -113,26 +127,92 @@ class ComponentAdd extends React.Component {
     console.log('Timeout loading ComponentEdit data!');
   }
 
+  isOriginalFile = (file) => {
+    console.log("propFiles:");
+    console.log(this.propsFiles)
+    for (let i = 0; i < this.propsFiles.length; i += 1) {
+      if (file === this.propsFiles[i].name) {
+        console.log("file: " + file + " == original file: " + this.propsFiles[i].name)
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  excludeOriginalFiles = (files) => {
+    const currFiles = [];
+    
+    for (let i = 0; i < files.length; i += 1) {
+      if (!this.isOriginalFile(files[i].name)) {
+        currFiles.push(files[i]);
+      } else {
+        //console.log("Not adding " + files[i].name + " because it is an original file")
+      }
+    }
+
+    return currFiles;
+  }
+
   // Callback function
   onUpload = (data) => {
     this.setState({ addButtonClicked: false });
-    this.files = data;
+    this.files = this.excludeOriginalFiles(data);
     console.log('Uploaded!');
-    console.log(data);
+    console.log(this.excludeOriginalFiles(data));
   }
 
   // Callback function
   onFileDrop = (filesUploaded) => {
-    this.filesDropped += filesUploaded;
-    console.log(`Incremented file counter by: ${filesUploaded}`);
+    this.filesDropped += this.excludeOriginalFiles(filesUploaded).length;
+    console.log(`Incremented file counter by: ${this.excludeOriginalFiles(filesUploaded).length}`);
+
+    console.log("propFiles:")
+    console.log(this.propsFiles);
   }
 
   // Callback function
-  onFileRemove = (newFiles) => {
-    this.filesDropped = newFiles.length;
-    this.filesToStore = newFiles;
-    console.log("File removed! New files:");
+  onFileRemove = (newFiles, deletedFile) => {
+    let currentFiles = 0;
+    let wasOriginalFile = false;
+
+    /*
+    // Update deleted files array
+    for (let i = 0; i < this.propsFiles.length; i += 1) {
+      if (this.propsFiles[i].name === deletedFile) {
+        this.removedFiles.push(deletedFile);
+        wasOriginalFile = true;
+      }
+    }
+    */
+    this.removedFiles.push(deletedFile);
+
+    // Update current files array. Exclude original files.
+    const currFiles = this.excludeOriginalFiles(newFiles);
+
+    console.log("newFiles:");
     console.log(newFiles);
+
+    console.log("this.propsFiles:");
+    console.log(this.propsFiles);
+
+    /*
+    for (let i = 0; i < this.propsFiles.length; i += 1) {
+      for (let j = 0; j < newFiles.length; j += 1) {
+        if (this.propsFiles[i])
+      }
+    } */
+
+    this.filesDropped = currFiles.length;
+    this.filesToStore = currFiles;
+    console.log("File:" + deletedFile + " removed! New files:");
+    // this.removedFiles.push(deletedFile);
+    
+    console.log("currFiles:");
+    console.log(currFiles);
+
+    console.log("removedFiles:");
+    console.log(this.removedFiles);
   }
 
   // Callback function
@@ -150,7 +230,7 @@ class ComponentAdd extends React.Component {
   }
 
   edit = (componentData) => {
-    console.log('Adding!');
+    console.log('Editing!');
     axios.post('/api/editComponent', {
       data: componentData,
     })
@@ -226,10 +306,11 @@ class ComponentAdd extends React.Component {
 
   waitFileUpload = async () => {
     for (let i = 0; i < FILE_UPLOAD_TIMEOUT; i += 1) {
+      
       if (this.filesDropped === this.files.length) {
         return;
       }
-
+      console.log(`this.filesDropped ( ${this.filesDropped} ) != this.files.length ( ${this.files.length} )`);
       /* eslint-disable no-await-in-loop */
       await this.sleep(1000);
     }
@@ -242,7 +323,7 @@ class ComponentAdd extends React.Component {
       if (this.dataAdded) {
         return;
       }
-
+      console.log("Waiting for this.dataAdded to be true")
       /* eslint-disable no-await-in-loop */
       await this.sleep(1000);
     }
@@ -259,6 +340,12 @@ class ComponentAdd extends React.Component {
 
   onAddButtonClick = () => {
     this.setState({ showAddPrompt: true });
+  }
+
+  // Extract removed files from original files array and
+  // return an array of which files is actually left currently
+  getCurrentFiles = () => {
+    const currFiles = [];
   }
 
   addComponentData = () => {
@@ -303,6 +390,7 @@ class ComponentAdd extends React.Component {
       type: currentTab,
       files: this.files,
       thumbnail: this.thumbnailFile,
+      removedFiles: this.removedFiles,
     };
 
     console.log(componentData);
@@ -350,7 +438,6 @@ class ComponentAdd extends React.Component {
 
     this.onHideFunc();
     this.partNumLoaded = false;
-    this.dataAdded = false;
   }
 
   onModalClose = () => {
@@ -361,7 +448,6 @@ class ComponentAdd extends React.Component {
       this.setState({ showOnClosePrompt: true });
     }
     this.partNumLoaded = false;
-    this.dataAdded = false;
   }
 
   promptCloseYesBtn = (evt) => {
@@ -373,10 +459,9 @@ class ComponentAdd extends React.Component {
     this.setState({ showOnClosePrompt: false });
   }
 
-  // Called when the 'add component' confirm button has been pressed
+  // Called when the 'save' button has been pressed
   promptAddYesBtn = async () => {
     this.addComponentData();
-    this.cleanup();
     this.closeModal();
 
     console.log('Waiting for the data to upload to database..');
@@ -385,6 +470,9 @@ class ComponentAdd extends React.Component {
 
     // Call parent to fetch new data
     this.onAddFunc();
+
+    
+    this.cleanup();
   }
 
   promptAddNoBtn = () => {
@@ -468,6 +556,9 @@ class ComponentAdd extends React.Component {
 
     // Set modal close states
     this.closeModal();
+
+    // Clear variables
+    this.dataAdded = false;
   }
 
   generateForms = () => {
@@ -534,6 +625,16 @@ class ComponentAdd extends React.Component {
     );
   }
 
+  saveOriginalFiles = (files) => {
+    if (files.length > 0) {
+      if (!this.originalFilesSaved) {
+        this.originalFilesSaved = true;
+        const cloned = cloneDeep(files);
+        this.propsFiles = cloned;
+      }
+    }
+  }
+
   render() {
     const {
       show,
@@ -542,12 +643,14 @@ class ComponentAdd extends React.Component {
       data,
       files,
     } = this.props;
+
     this.onHideFunc = onHide;
     this.onAddFunc = onAdd;
     this.data = data;
     this.generateOnClosePrompt();
     this.generateAddPrompt();
     this.generateForms();
+    this.saveOriginalFiles(files);
 
     return (
       <Modal

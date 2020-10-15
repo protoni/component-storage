@@ -112,7 +112,7 @@ class ComponentAdd extends React.Component {
 
   // Callback function
   onFileDrop = (filesUploaded) => {
-    this.filesDropped += filesUploaded;
+    this.filesDropped += filesUploaded.length;
     console.log(`Incremented file counter by: ${filesUploaded}`);
   }
 
